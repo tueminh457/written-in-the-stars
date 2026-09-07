@@ -1,0 +1,477 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+
+    min-height: 100vh;
+
+    background: #000000;
+
+    color: #fffbfb;
+
+    font-family: Arial, sans-serif;
+}
+
+
+/* =========================
+   INTRO
+========================= */
+
+.intro {
+    width: min(900px, 90%);
+
+    margin: auto;
+
+    padding-top: 12vh;
+
+    text-align: center;
+}
+
+.eyebrow {
+    font-size: 11px;
+
+    letter-spacing: .2em;
+
+    font-weight: bold;
+}
+
+.intro h1 {
+    margin: 30px 0;
+
+    font-size: clamp(
+        45px,
+        8vw,
+        100px
+    );
+
+    line-height: .85;
+
+    letter-spacing: -.06em;
+}
+
+.description {
+    max-width: 520px;
+
+    margin: 30px auto;
+
+    line-height: 1.6;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.birth-form {
+    width: min(520px, 90%);
+
+    margin: 80px auto 40px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 11px;
+
+    font-weight: bold;
+
+    letter-spacing: .15em;
+}
+
+.input-group input {
+    width: 100%;
+
+    padding: 15px 18px;
+
+    border: 1px solid #171717;
+
+    background: transparent;
+
+    color: #171717;
+
+    font: inherit;
+
+    outline: none;
+}
+
+.input-group input:focus {
+    background: white;
+}
+
+
+/* =========================
+   LOCATION
+========================= */
+
+.location-group {
+    position: relative;
+}
+
+.location-results {
+    display: none;
+
+    position: absolute;
+
+    z-index: 20;
+
+    top: 68px;
+
+    left: 0;
+
+    width: 100%;
+
+    max-height: 300px;
+
+    overflow-y: auto;
+
+    border: 1px solid #171717;
+
+    background: #f8f5ef;
+}
+
+.location-results.show {
+    display: block;
+}
+
+.location-option {
+    width: 100%;
+
+    padding: 14px 16px;
+
+    border: none;
+
+    border-bottom: 1px solid #ccc;
+
+    background: transparent;
+
+    color: #171717;
+
+    text-align: left;
+
+    font: inherit;
+
+    cursor: pointer;
+}
+
+.location-option:hover {
+    background: #171717;
+
+    color: white;
+}
+
+.selected-location {
+    margin: 0;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    opacity: .65;
+}
+
+
+/* =========================
+   BUTTON
+========================= */
+
+button {
+    margin-top: 10px;
+
+    padding: 18px 25px;
+
+    border: 1px solid #171717;
+
+    background: #171717;
+
+    color: white;
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    letter-spacing: .15em;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        opacity .2s ease;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-3px);
+}
+
+button:disabled {
+    opacity: .35;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.status {
+    min-height: 18px;
+
+    margin: 0;
+
+    font-size: 12px;
+
+    text-align: center;
+}
+
+
+/* =========================
+   CANVAS
+========================= */
+
+.canvas-container {
+    width: 100%;
+    margin-top: 30px;
+}
+
+#canvas-container {
+    width: 100%;
+    min-height: 600px;
+}
+
+#three-container {
+    width: 100%;
+    height: 600px;
+}
+
+#three-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* =========================
+   RESULTS
+========================= */
+
+.result {
+    width: min(1000px, 90%);
+
+    margin: 100px auto;
+
+    padding-bottom: 100px;
+}
+
+.hidden {
+    display: none;
+}
+
+.result-heading {
+    text-align: center;
+
+    margin-bottom: 50px;
+}
+
+.result-heading h2 {
+    margin: 10px 0;
+
+    font-size: clamp(
+        35px,
+        6vw,
+        70px
+    );
+
+    letter-spacing: -.05em;
+}
+
+.birth-summary {
+    font-size: 12px;
+
+    opacity: .65;
+}
+
+
+/* =========================
+   BIG THREE
+========================= */
+
+.big-three {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+}
+
+.planet-card {
+    min-height: 250px;
+
+    padding: 30px;
+
+    border: 1px solid #171717;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+}
+
+.planet-symbol {
+    font-size: 50px;
+
+    margin-bottom: 20px;
+}
+
+.planet-name {
+    font-size: 10px;
+
+    letter-spacing: .2em;
+
+    font-weight: bold;
+}
+
+.planet-card h3 {
+    margin: 10px 0;
+
+    font-size: 30px;
+}
+
+
+/* =========================
+   PLANET LIST
+========================= */
+
+.planet-section {
+    margin-top: 100px;
+}
+
+.planet-section > h2 {
+    font-size: 14px;
+
+    letter-spacing: .15em;
+
+    border-bottom: 1px solid #171717;
+
+    padding-bottom: 15px;
+}
+
+#planetList,
+#houseList {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+.planet-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 20px;
+
+    border-bottom: 1px solid #aaa;
+}
+
+.planet-row-left {
+    display: flex;
+
+    gap: 15px;
+
+    align-items: center;
+}
+
+.planet-row-symbol {
+    font-size: 25px;
+}
+
+.planet-row-name {
+    font-weight: bold;
+}
+
+.planet-row-position {
+    font-size: 13px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    width: min(1000px, 90%);
+
+    margin: 0 auto 50px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #aaa;
+
+    font-size: 10px;
+
+    opacity: .6;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    .intro {
+        padding-top: 8vh;
+    }
+
+    .birth-form {
+        margin-top: 60px;
+    }
+
+    .canvas-container {
+        min-height: 400px;
+    }
+
+    .big-three {
+        grid-template-columns: 1fr;
+    }
+
+    #planetList,
+    #houseList {
+        grid-template-columns: 1fr;
+    }
+
+    .planet-card {
+        min-height: 200px;
+    }
+
+}

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Interactive A3 — Natal Chart</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header class="intro">
+
+        <p class="eyebrow">
+            ASTROLOGY / GENERATIVE EXPERIENCE
+        </p>
+
+        <h1>
+            DISCOVER<br>
+            YOUR NATAL CHART
+        </h1>
+
+        <p class="description">
+            Enter the date, time and place you were born
+            to discover your personalised cosmic profile.
+        </p>
+
+    </header>
+
+
+    <main>
+
+        <!-- =========================
+             BIRTH FORM
+        ========================== -->
+
+        <section class="birth-form">
+
+            <div class="input-group">
+
+                <label for="birthDate">
+                    BIRTH DATE
+                </label>
+
+                <input
+                    type="date"
+                    id="birthDate"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="birthTime">
+                    BIRTH TIME
+                </label>
+
+                <input
+                    type="time"
+                    id="birthTime"
+                >
+
+            </div>
+
+
+            <div class="input-group location-group">
+
+                <label for="birthPlace">
+                    BIRTH PLACE
+                </label>
+
+                <input
+                    type="text"
+                    id="birthPlace"
+                    placeholder="Search city or place..."
+                    autocomplete="off"
+                >
+
+                <div
+                    id="locationResults"
+                    class="location-results"
+                ></div>
+
+                <p
+                    id="selectedLocation"
+                    class="selected-location"
+                >
+                    No location selected
+                </p>
+
+            </div>
+
+
+            <button
+                id="generateBtn"
+                disabled
+            >
+                GENERATE MY CHART
+            </button>
+
+
+            <p
+                id="status"
+                class="status"
+            ></p>
+
+        </section>
+
+
+        <!-- =========================
+             P5 CANVAS
+        ========================== -->
+
+        <section class="canvas-container">
+
+    <!-- Existing p5 natal chart -->
+    <div id="canvas-container"></div>
+
+    <!-- New Three.js planet -->
+    <div id="three-container"></div>
+
+</section>
+
+
+        <!-- =========================
+             RESULTS
+        ========================== -->
+
+        <section
+            id="result"
+            class="result hidden"
+        >
+
+            <div class="result-heading">
+
+                <p class="eyebrow">
+                    YOUR RESULT
+                </p>
+
+                <h2>
+                    COSMIC PROFILE
+                </h2>
+
+                <p
+                    id="birthSummary"
+                    class="birth-summary"
+                ></p>
+
+            </div>
+
+
+            <!-- BIG THREE -->
+
+            <div class="big-three">
+
+                <article class="planet-card">
+
+                    <span class="planet-symbol">
+                        ☉
+                    </span>
+
+                    <p class="planet-name">
+                        SUN
+                    </p>
+
+                    <h3 id="sunSign">
+                        —
+                    </h3>
+
+                    <p id="sunDegree">
+                        —
+                    </p>
+
+                </article>
+
+
+                <article class="planet-card">
+
+                    <span class="planet-symbol">
+                        ☽
+                    </span>
+
+                    <p class="planet-name">
+                        MOON
+                    </p>
+
+                    <h3 id="moonSign">
+                        —
+                    </h3>
+
+                    <p id="moonDegree">
+                        —
+                    </p>
+
+                </article>
+
+
+                <article class="planet-card">
+
+                    <span class="planet-symbol">
+                        ↑
+                    </span>
+
+                    <p class="planet-name">
+                        RISING
+                    </p>
+
+                    <h3 id="risingSign">
+                        —
+                    </h3>
+
+                    <p id="risingDegree">
+                        —
+                    </p>
+
+                </article>
+
+            </div>
+
+
+            <!-- PLANETS -->
+
+            <div class="planet-section">
+
+                <h2>
+                    PLANETARY POSITIONS
+                </h2>
+
+                <div id="planetList"></div>
+
+            </div>
+
+
+            <!-- HOUSES -->
+
+            <div class="planet-section">
+
+                <h2>
+                    HOUSES
+                </h2>
+
+                <div id="houseList"></div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer class="footer">
+
+        <p>
+            Planetary calculations powered by Swiss Ephemeris.
+            Location data provided by Open-Meteo Geocoding.
+        </p>
+
+    </footer>
+
+
+    <!-- YOUR LOCAL P5 -->
+    <script src="js/p5.js"></script>
+
+    <!-- P5 SOUND -->
+    <script src="js/addons/p5.sound.min.js"></script>
+
+    <!-- YOUR JAVASCRIPT -->
+    <script src="sketch.js"></script>
+
+    <!-- THREE.JS -->
+<script type="importmap">
+{
+  "imports": {
+        "three": "https://unpkg.com/three@0.185.1/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module" src="js/main.js"></script>
+
+</body>
+</html>
