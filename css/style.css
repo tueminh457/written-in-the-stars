@@ -1,3 +1,17 @@
+@font-face {
+    font-family: "Rosie Brown";
+    src: url("assets/fonts/Rosie%20Brown%20Serif%20Demo.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Coolvetica";
+    src: url("../assets/fonts/Coolvetica.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -15,9 +29,95 @@ body {
 
     color: #fffbfb;
 
-    font-family: Arial, sans-serif;
+    font-family: "Coolvetica", Arial, sans-serif;
+
+     text-shadow:
+        0 0 2px rgba(255, 255, 255, .9),
+        0 0 6px rgba(255, 255, 255, .55),
+        0 0 14px rgba(255, 255, 255, .35);
 }
 
+/* ============================================================
+   CRT SCANLINE OVERLAY + FLICKER
+============================================================ */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, .035) 0px,
+        rgba(255, 255, 255, .035) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    mix-blend-mode: overlay;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    background: rgba(255, 255, 255, .015);
+    animation: crt-flicker 6s infinite;
+}
+
+@keyframes crt-flicker {
+    0%, 100% { opacity: 1; }
+    2% { opacity: .4; }
+    4% { opacity: 1; }
+    36% { opacity: 1; }
+    38% { opacity: .6; }
+    40% { opacity: 1; }
+    70% { opacity: 1; }
+    72% { opacity: .5; }
+    74% { opacity: 1; }
+}
+
+.page-nav {
+    width: min(1000px, 90%);
+    margin: 0 auto 55px;
+    padding: 18px 0;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #171717;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .14em;
+}
+
+.page-nav a,
+.page-nav-current {
+    color: inherit;
+    text-decoration: none;
+}
+
+.page-nav a {
+    opacity: .55;
+}
+
+.page-nav a:hover {
+    opacity: 1;
+}
+
+.display-header {
+    width: min(1000px, 90%);
+    margin: auto;
+    padding-top: 5vh;
+    text-align: center;
+}
+
+.display-header h1 {
+    margin: 20px 0 14px;
+    font-size: clamp(42px, 8vw, 92px);
+    line-height: .9;
+    letter-spacing: -.06em;
+}
 
 /* =========================
    INTRO
@@ -267,6 +367,14 @@ button:disabled {
     height: 100%;
 }
 
+/* The universe screen reuses #three-container inside a small round
+   frame (see SCREEN 4 below), so its fixed 600px height above needs
+   overriding there — .flow-page + #id beats a bare #id rule. */
+.flow-page #three-container {
+    width: 100%;
+    height: 100%;
+}
+
 
 /* =========================
    RESULTS
@@ -423,7 +531,6 @@ button:disabled {
     font-size: 13px;
 }
 
-
 /* =========================
    FOOTER
 ========================= */
@@ -448,6 +555,16 @@ button:disabled {
 ========================= */
 
 @media (max-width: 700px) {
+
+    .page-nav {
+        margin-bottom: 35px;
+        gap: 20px;
+    }
+
+    .page-nav a,
+    .page-nav-current {
+        font-size: 9px;
+    }
 
     .intro {
         padding-top: 8vh;
@@ -474,4 +591,2285 @@ button:disabled {
         min-height: 200px;
     }
 
+}
+
+/* =========================
+   FIXED PLANET DISPLAY
+========================= */
+
+html:has(body.display-page),
+body.display-page {
+    height: 100%;
+    overflow: hidden;
+}
+
+body.display-page {
+    position: relative;
+    min-height: 100vh;
+    height: 100vh;
+}
+
+.display-page .display-header {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    z-index: 10;
+    width: auto;
+    max-width: 55%;
+    padding: 18px 24px;
+    text-align: left;
+    pointer-events: none;
+}
+
+.display-page .display-header .page-nav {
+    width: auto;
+    margin: 0 0 28px;
+    padding: 0;
+    border: 0;
+    pointer-events: auto;
+}
+
+.display-page .display-header .page-nav .page-nav-current {
+    display: none;
+}
+
+.display-page .display-header .page-nav a {
+    font-size: 10px;
+}
+
+.display-page .display-header .eyebrow {
+    margin: 0 0 10px;
+}
+
+.display-page .display-header h1 {
+    margin: 0;
+    font-size: clamp(30px, 4vw, 58px);
+}
+
+.display-page .birth-summary {
+    margin: 12px 0 0;
+}
+
+.planet-switcher {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    z-index: 20;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    transform: translateX(-50%);
+}
+
+.universe-back {
+    /* Same look as the SUN / MOON / ASC tabs, pinned top left. */
+    position: fixed;
+    top: 18px;
+    left: 24px;
+    z-index: 20;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fffbfb;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .12em;
+    opacity: .45;
+    cursor: pointer;
+    transition: opacity .2s ease;
+}
+
+.universe-back:focus-visible {
+    opacity: 1;
+}
+
+.planet-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fffbfb;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .12em;
+    opacity: .45;
+    cursor: pointer;
+    transition: opacity .2s ease;
+}
+
+.planet-tab.is-active {
+    opacity: 1;
+}
+
+/* =====================================================
+   PLANET NAV ARROWS — prev/next controls pinned to the
+   middle left/right of the screen. Desktop (>1024px) never
+   shows these; they only appear at the 1024px breakpoint
+   below, where they take over cycling between Sun/Moon/Asc.
+   ===================================================== */
+
+.planet-nav {
+    display: none;
+    position: fixed;
+    top: 50%;
+    z-index: 22;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    margin: 0;
+    padding: 0;
+    transform: translateY(-50%);
+    border: 1px solid rgba(255, 255, 255, .4);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, .35);
+    color: #fffbfb;
+    font: 16px "JetBrains Mono", "Courier New", monospace;
+    line-height: 1;
+    opacity: .7;
+    cursor: pointer;
+    transition: opacity .2s ease;
+}
+
+.planet-nav:hover,
+.planet-nav:focus-visible {
+    opacity: 1;
+}
+
+.planet-nav-prev {
+    left: 10px;
+}
+
+.planet-nav-next {
+    right: 10px;
+}
+
+.zoom-ruler {
+    position: fixed;
+    top: 50%;
+    right: 22px;
+    z-index: 21;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, .7);
+    font: 9px "Courier New", monospace;
+    letter-spacing: .12em;
+}
+
+.ruler-track {
+    position: relative;
+    width: 38px;
+    height: 430px;
+    border-right: 1px solid rgba(255, 255, 255, .7);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 24'%3E%3Crect x='0' y='22' width='4' height='2' fill='%23ffffff' fill-opacity='0.24'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 100% var(--ruler-tick-gap, 12px);
+}
+
+.ruler-track::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 24'%3E%3Crect x='0' y='23' width='4' height='1' fill='%23ffffff' fill-opacity='0.62'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 100% calc(var(--ruler-tick-gap, 12px) * 5);
+}
+
+.zoom-ruler input {
+    position: absolute;
+    inset: 0 -46px;
+    width: 130px;
+    height: 18px;
+    margin: auto;
+    accent-color: #d8f6ff;
+    transform: rotate(-90deg);
+    cursor: ns-resize;
+    opacity: 0;
+}
+
+
+.coordinate-hud {
+    position: fixed;
+    right: 170px;
+    bottom: 200px;
+    z-index: 21;
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 5px 13px;
+    min-width: 180px;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, .52);
+    color: rgba(232, 246, 255, .75);
+    font: 10px "Courier New", monospace;
+    letter-spacing: .08em;
+    pointer-events: none;
+}
+
+.coordinate-title {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #fff;
+    font-family: "Datatype", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: .1em;
+}
+
+.coordinate-warning {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 14px;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    background: #fff;
+    color: #000;
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0;
+    padding-top: 2px;
+}
+
+.coordinate-stripes {
+    grid-column: 1 / -1;
+    height: 6px;
+    margin: 0 0 2px;
+    background-image: repeating-linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, .55) 0,
+        rgba(255, 255, 255, .55) 5px,
+        transparent 5px,
+        transparent 10px
+    );
+}
+
+.coordinate-hud b {
+    color: #fff;
+    font-weight: normal;
+}
+
+.display-instruction {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    z-index: 21;
+    margin: 0;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, .7);
+    font: 10px "Courier New", monospace;
+    letter-spacing: .12em;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.display-page main {
+    width: 100%;
+    height: 100vh;
+}
+
+.visual-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.display-page #canvas-container {
+    display: none;
+}
+
+.display-page #three-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    background: #000;
+}
+
+.display-page #three-container.is-hidden {
+    visibility: hidden;
+}
+
+.display-page #ascendant-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    background: #000;
+}
+
+.display-page #ascendant-container.is-hidden {
+    visibility: hidden;
+}
+
+.display-page #moon-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    background: #000;
+}
+
+.display-page #moon-container.is-hidden {
+    visibility: hidden;
+}
+
+.sign-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+    font-family: "Datatype", Arial, sans-serif;
+}
+
+.sign-panel.is-hidden {
+    display: none;
+}
+
+.sign-panel-left {
+    position: absolute;
+    top: auto;
+    bottom: 100px;
+    left: 120px;
+    width: min(450px, 38%);
+    pointer-events: auto;
+}
+
+/* =====================================================
+   SIGN PANEL BOX — SD-card-style readout card wrapping the
+   badge/name/intro: a single diagonal chamfer at top-left,
+   a small notch that cuts INTO the shape near the top-right
+   (rather than another plain corner cut), a chamfer at the
+   bottom-left, and a bold spine along the left edge.
+   ===================================================== */
+
+.sign-panel-box {
+    position: relative;
+}
+
+.sign-panel-box-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    opacity: .45;
+}
+
+.sign-panel-box-content {
+    position: relative;
+    z-index: 1;
+    padding: 30px 180px 30px 70px;
+}
+
+.sign-panel-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 10px;
+}
+
+.sign-panel-badge-dash {
+    flex: 1;
+    height: 6px;
+    background-image: repeating-linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, .5) 0,
+        rgba(255, 255, 255, .5) 3px,
+        transparent 3px,
+        transparent 6px
+    );
+}
+
+.sign-panel-right {
+    position: absolute;
+    top: 160px;
+    right: 150px;
+    width: min(200px, 26%);
+    text-align: left;
+    pointer-events: auto;
+}
+
+/* =====================================================
+   HUD FRAME — left/right corner brackets + center crosshair,
+   sitting over the visual stage like a lab-instrument readout.
+   Bracket ticks are drawn at slightly different lengths and
+   angles on purpose so the frame reads as hand-set/uneven
+   rather than a perfectly machined rectangle.
+   ===================================================== */
+
+.hud-frame {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    pointer-events: none;
+}
+
+.hud-bracket {
+    position: absolute;
+    top: 30%;
+    bottom: 30%;
+    width: 20px;
+}
+
+.hud-bracket-left {
+    left: 80px;
+    border-left: 1px solid rgba(255, 255, 255, .55);
+}
+
+.hud-bracket-right {
+    right: 80px;
+    border-right: 1px solid rgba(255, 255, 255, .55);
+}
+
+.hud-bracket::before,
+.hud-bracket::after {
+    content: "";
+    position: absolute;
+    height: 1px;
+    background: rgba(255, 255, 255, .55);
+}
+
+.hud-bracket-left::before {
+    top: 0;
+    left: 0;
+    width: 65%;
+    transform: rotate(-1.5deg);
+    transform-origin: left top;
+}
+
+.hud-bracket-left::after {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    transform: rotate(1deg);
+    transform-origin: left bottom;
+}
+
+.hud-bracket-right::before {
+    top: 0;
+    right: 0;
+    width: 100%;
+    transform: rotate(1.5deg);
+    transform-origin: right top;
+}
+
+.hud-bracket-right::after {
+    bottom: 0;
+    right: 0;
+    width: 60%;
+    transform: rotate(-1deg);
+    transform-origin: right bottom;
+}
+
+.hud-crosshair {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255, 255, 255, .55);
+    font-family: "Courier New", monospace;
+    font-size: 40px;
+    line-height: 1;
+}
+
+.sign-panel-eyebrow {
+    margin: 0;
+    padding: 4px 10px;
+    border: 1px solid rgba(255, 255, 255, .55);
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: .14em;
+    white-space: nowrap;
+}
+
+.sign-panel-name {
+    margin: 0 0 8px;
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: .9;
+    letter-spacing: -.03em;
+}
+
+.sign-panel-intro {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.25;
+    opacity: .75;
+}
+
+.sign-panel-text {
+    margin: 0;
+    min-height: 130px;
+    font-size: 11px;
+    line-height: 1.3;
+
+}
+
+/* =====================================================
+   TRACKING POINT — target-lock reticle sitting to the left
+   of the "YOU ARE..." text, connected to it by an HUD line.
+   ===================================================== */
+
+.tracking-point {
+    position: absolute;
+    top: 0;
+    left: -160px;
+    width: 160px;
+    height: 160px;
+    pointer-events: none;
+}
+
+.tracking-point svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.tracking-point .track-ring {
+    fill: none;
+    stroke: rgba(255, 255, 255, .55);
+    stroke-width: 1;
+    stroke-dasharray: 2 3;
+}
+
+.tracking-point .track-dot {
+    fill: rgba(232, 246, 255, .85);
+}
+
+.tracking-point .track-ray {
+    stroke: rgba(255, 255, 255, .5);
+    stroke-width: 1;
+}
+
+.tracking-point .track-line {
+    fill: none;
+    stroke: rgba(255, 255, 255, .55);
+    stroke-width: 1;
+}
+
+/* Top rule the tracking line feeds into, plus the "DATA SCAN"
+   readout header sitting just underneath it. */
+
+.scan-top-rule {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: -40px;
+    height: 1px;
+    background: rgba(255, 255, 255, .55);
+}
+
+.scan-title {
+    margin: 14px 0 6px;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: .1em;
+    color: #fff;
+}
+
+.scan-stripes {
+    height: 6px;
+    margin: 0 0 12px;
+    background-image: repeating-linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, .55) 0,
+        rgba(255, 255, 255, .55) 5px,
+        transparent 5px,
+        transparent 10px
+    );
+}
+
+.type-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1em;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    background: #fffbfb;
+    animation: sign-cursor-blink 1s step-end infinite;
+}
+
+@keyframes sign-cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* =====================================================
+   SUN / MOON / ASC DISPLAY — COMPACT LAYOUT (<=1024px)
+   Nothing above this breakpoint changes. Below it: the
+   bracketed shortcut codes ([1]/[2]/[3]/[U]) disappear from
+   the tab labels, the HUD corner brackets/crosshair and the
+   mouse-hint + live coordinate readout go away, the "YOUR
+   SUN..." card moves/scales to the top-left corner, the
+   "DATA SCAN" readout moves/scales to the bottom-right
+   corner, and the < > arrows take over planet switching.
+   ===================================================== */
+
+@media (max-width: 1024px) {
+
+    /* Strip the [1] [2] [3] [U] shortcut codes, leaving
+       just the SUN / MOON / ASC / UNIVERSE labels. */
+    .planet-tab span:first-child,
+    .universe-back span:first-child,
+    .next-button span:first-child,
+    .hide-button span:first-child,
+    .save-button span:first-child,
+    .credit-button span:first-child,
+    .tv-replay-btn span:first-child {
+        display: none;
+    }
+
+    .next-button,
+    .hide-button,
+    .save-button,
+    .credit-button,
+    .tv-replay-btn {
+        gap: 0;
+    }
+
+    .planet-tab,
+    .universe-back {
+        gap: 0;
+    }
+
+    /* HUD corner brackets + crosshair overlay, gone. */
+    .hud-frame {
+        display: none;
+    }
+
+    /* Mouse-move hint and the live X/Y/Z coordinate readout, gone. */
+    .display-instruction,
+    .coordinate-hud {
+        display: none;
+    }
+
+    /* "YOUR SUN / ..." card: moves to the top-left and scales down. */
+    .sign-panel-left {
+        top: 88px;
+        bottom: auto;
+        left: 10px;
+        width: min(260px, 64%);
+        transform-origin: top left;
+        transform: scale(.82);
+    }
+
+    .sign-panel-box-content {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 18px 20px 18px 22px;
+    }
+
+    /* Decorative SD-card-style frame graphic around the box, gone. */
+    .sign-panel-box-frame {
+        display: none;
+    }
+
+
+    /* "DATA SCAN / YOU ARE..." readout: moves to the bottom-right
+       and scales down. The target-lock reticle to its left is
+       dropped since there's no room for it in the corner. */
+    .sign-panel-right {
+        top: auto;
+        bottom: 78px;
+        right: 10px;
+        left: auto;
+        width: min(220px, 60%);
+        box-sizing: border-box;
+        transform-origin: bottom right;
+        transform: scale(.82);
+    }
+
+    .tracking-point {
+        display: none;
+    }
+
+    /* Clamp every panel text so it scales with the viewport
+       instead of overflowing its box. */
+    .sign-panel-eyebrow {
+        font-size: clamp(8px, 2vw, 9px);
+        padding: 3px 8px;
+    }
+
+    .sign-panel-name {
+        font-size: clamp(20px, 6vw, 32px);
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .sign-panel-intro {
+        font-size: clamp(9px, 2.4vw, 11px);
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .sign-panel-text {
+        min-height: 70px;
+        font-size: clamp(10px, 2.6vw, 12px);
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .scan-title {
+        font-size: clamp(10px, 2.4vw, 12px);
+    }
+
+    /* < > planet-switch arrows, middle left/right of the screen. */
+    .planet-nav {
+        display: flex;
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .sign-panel-text {
+        min-height: 90px;
+        font-size: 13px;
+    }
+
+}
+
+.planet-placeholder {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    color: #fffbfb;
+    text-align: center;
+}
+
+.planet-placeholder.is-visible {
+    display: flex;
+}
+
+.planet-placeholder-symbol {
+    font-size: clamp(70px, 12vw, 150px);
+}
+
+.planet-placeholder p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: .2em;
+}
+
+.planet-placeholder > span:last-child {
+    font-size: 10px;
+    letter-spacing: .15em;
+    opacity: .55;
+}
+
+@media (max-width: 700px) {
+    .display-page .display-header {
+        max-width: 62%;
+        padding: 16px;
+    }
+
+    .display-page .display-header .page-nav {
+        margin-bottom: 20px;
+    }
+
+    .display-page .display-header h1 {
+        font-size: 28px;
+    }
+
+    .planet-switcher {
+        top: 18px;
+        left: 50%;
+        gap: 12px;
+        transform: translateX(-50%);
+    }
+
+    .next-button {
+        top: 18px;
+        right: 16px;
+    }
+
+    .bottom-left-actions {
+        left: 16px;
+        bottom: 16px;
+        gap: 14px;
+    }
+
+    .planet-tab {
+        gap: 4px;
+        font-size: 9px;
+    }
+
+    .planet-tab-symbol {
+        font-size: 17px;
+    }
+}
+
+/* ============================================================
+   LANDING PAGE
+============================================================ */
+
+body.landing-page {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: "Coolvetica", Arial, sans-serif;
+    cursor: crosshair;
+}
+
+.bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    display: block;
+}
+
+.landing-link {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: #fffbfb;
+}
+
+.landing-content {
+    text-align: center;
+    padding-bottom: 10vh;       /* pushes the centred block up by 5vh */
+    animation: landing-fade-in 1.6s ease both;
+}
+
+.landing-title {
+    margin: 0 0 24px;
+    line-height: 0;
+}
+
+/* Inline title SVG. Its viewBox is cropped to the artwork (1048 x 614), and
+   the width is capped by both the viewport width and the viewport height
+   (via the aspect ratio) so it never pushes the CTA off-screen. */
+.landing-title-svg {
+    display: block;
+    width: min(92vw, calc(70vh * 1048 / 614), 1048px);
+    height: auto;
+    margin: 0 auto;
+    overflow: visible;          /* lets the glow filters spill past the viewBox */
+    user-select: none;
+    transform-origin: 50% 50%;
+    animation: title-zoom 2.4s cubic-bezier(.16, 1, .3, 1) both;   /* ease-out */
+}
+
+@keyframes title-zoom {
+    from { transform: scale(.8); }
+    to   { transform: none; }
+}
+
+/* Particle field between the starfield and the title (js/landing.js) */
+.particle-canvas {
+    pointer-events: none;
+    animation: landing-fade-in 2.4s ease .3s both;
+}
+
+/* p5 constellation canvas (js/constellation.js): sits above the title and
+   ignores the mouse, so clicks pass straight through to the window */
+.constellation-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    mix-blend-mode: difference;     /* white on the bright title flips to black, so stars stay visible */
+}
+
+/* Digit columns built by js/landing.js (replace the outlined numbers) */
+.landing-title-svg .title-digits {
+    font-family: "input-mono", "Input Mono", "InputMono-Light", "JetBrains Mono", "Courier New", monospace;
+    font-size: 14.65px;
+    font-weight: 300;
+    fill: #fff;
+    white-space: pre;
+}
+
+
+/* ------------------------------------------------------------
+   TITLE ANIMATION
+   Every target below is an id set on the layers in Illustrator.
+------------------------------------------------------------ */
+
+/* Intro: parts fade in one after another */
+.landing-title-svg > * {
+    animation: title-reveal .9s ease var(--d, 0s) both;
+}
+
+.landing-title-svg #title                 { --d: .10s; }
+.landing-title-svg > g:not([id])          { --d: .35s; }   /* moon (glow wrapper) */
+.landing-title-svg #star-grid,
+.landing-title-svg #box                   { --d: .50s; }
+.landing-title-svg #circles               { --d: .65s; }
+.landing-title-svg #card,
+.landing-title-svg #number-random         { --d: .85s; }
+.landing-title-svg #checkered,
+.landing-title-svg #barcode               { --d: 1.00s; }
+.landing-title-svg #will-you,
+.landing-title-svg #cross-rectangle       { --d: 1.15s; }
+
+@keyframes title-reveal {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Anything that scales/rotates does so around its own centre */
+.landing-title-svg #moon,
+.landing-title-svg #star,
+.landing-title-svg #star-grid > path,
+.landing-title-svg #circles > path {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+/* Sparkles: twinkle (durations/offsets vary so they never sync up) */
+.landing-title-svg #star {
+    animation:
+        title-reveal .9s ease .70s both,
+        title-twinkle 3.6s ease-in-out 1.6s infinite;
+}
+.landing-title-svg #star-grid > path,
+.landing-title-svg #circles > path {
+    animation: title-twinkle 3.2s ease-in-out infinite;
+}
+.landing-title-svg #star-grid > path:nth-of-type(1) { animation-delay: -.6s;  animation-duration: 3.0s; }
+.landing-title-svg #star-grid > path:nth-of-type(2) { animation-delay: -1.7s; animation-duration: 4.1s; }
+.landing-title-svg #star-grid > path:nth-of-type(3) { animation-delay: -2.4s; animation-duration: 3.5s; }
+.landing-title-svg #star-grid > path:nth-of-type(4) { animation-delay: -.9s;  animation-duration: 4.6s; }
+.landing-title-svg #circles > path:nth-of-type(1)   { animation-delay: -1.2s; animation-duration: 3.8s; }
+.landing-title-svg #circles > path:nth-of-type(2)   { animation-delay: -2.9s; animation-duration: 3.3s; }
+
+@keyframes title-twinkle {
+    0%, 100% { opacity: .45; transform: scale(.8); }
+    50%      { opacity: 1;   transform: scale(1);  }
+}
+
+/* Crescent moon: slow sway */
+.landing-title-svg #moon {
+    animation: title-sway 12s ease-in-out infinite alternate;
+}
+@keyframes title-sway {
+    from { transform: rotate(-2deg); }
+    to   { transform: rotate(2deg);  }
+}
+
+/* "*03": occasional glitch flicker */
+.landing-title-svg #number-03 {
+    animation:
+        title-reveal .9s ease .85s both,
+        title-glitch 7s steps(1) 2s infinite;
+}
+@keyframes title-glitch {
+    0%, 90%, 94%, 100% { opacity: 1;  }
+    91%                { opacity: .2; }
+    92%                { opacity: 1;  }
+    93%                { opacity: .4; }
+}
+
+/* Barcode: scan sweep (delays set in index.html) */
+.landing-title-svg #barcode rect {
+    animation: title-scan 3s ease-in-out infinite;
+}
+@keyframes title-scan {
+    0%, 35%, 100% { opacity: 1;   }
+    15%           { opacity: .15; }
+}
+
+/* Checkerboard: squares blink at random (timing set in index.html) */
+.landing-title-svg #checkered rect {
+    animation: title-blink 3s steps(1) infinite;
+}
+@keyframes title-blink {
+    0%, 55% { opacity: 1;   }
+    56%     { opacity: .12; }
+    70%     { opacity: 1;   }
+}
+
+/* Striped bar: dim wave (delays set in index.html) */
+.landing-title-svg #cross-rectangle path {
+    animation: title-wave 3.2s ease-in-out infinite;
+}
+@keyframes title-wave {
+    0%, 45%, 100% { opacity: 1;   }
+    20%           { opacity: .3;  }
+}
+
+/* Small "redacted" blocks in the bottom-right caption: cursor-style blink */
+.landing-title-svg #will-you > rect {
+    animation: title-cursor 1.6s steps(1) infinite;
+}
+.landing-title-svg #will-you > rect:nth-of-type(2) { animation-delay: -.4s; }
+.landing-title-svg #will-you > rect:nth-of-type(3) { animation-delay: -.8s; }
+.landing-title-svg #will-you > rect:nth-of-type(4) { animation-delay: -1.2s; }
+@keyframes title-cursor {
+    0%, 60% { opacity: 1;  }
+    61%     { opacity: .1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .landing-title-svg,
+    .landing-title-svg *,
+    .particle-canvas {
+        animation: none !important;
+    }
+}
+
+.landing-cta {
+    position: relative;
+    top: 28px;                  /* nudges the prompt down without moving the title */
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: "input-mono", "Input Mono", "JetBrains Mono", "Courier New", monospace;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: .25em;
+    opacity: .55;
+    animation: landing-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes landing-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes landing-pulse {
+    0%, 100% { opacity: .3; }
+    50% { opacity: .85; }
+}
+
+
+/* ============================================================
+   FLOW PAGE (index.html) — SHARED SCREEN SHELL
+============================================================ */
+
+html:has(body.flow-page),
+body.flow-page {
+    height: 100%;
+    overflow: hidden;
+}
+
+body.flow-page {
+    position: relative;
+    min-height: 100vh;
+    height: 100vh;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+}
+
+.flow-main {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    z-index: 2;
+}
+
+.universe-stray-canvas {
+    z-index: 1;
+    /* Starts hidden. initUniverseStrays() (js/starfield.js) fades it in
+       while the universe screen is showing and out again after. */
+    opacity: 0;
+    pointer-events: none;
+}
+
+.flow-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .7s ease;
+}
+
+.flow-screen.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.chrome-footer {
+    position: fixed;
+    bottom: 14px;
+    right: 20px;
+    z-index: 5;
+    margin: 0;
+    font-size: 9px;
+    letter-spacing: .12em;
+    opacity: .35;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+}
+
+
+/* ============================================================
+   SCREEN 1 — INTRO TYPING
+============================================================ */
+
+.intro-type {
+    width: min(720px, 90%);
+    text-align: center;
+}
+
+.intro-type-text {
+    margin: 0;
+    font-size: clamp(10px, 2.6vw, 16px);
+    line-height: 1.5;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    opacity: 1;
+    transition: opacity .5s ease;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-weight: 300;
+}
+
+/* "PRESS [E] TO SKIP" at the bottom of the intro screen (js/flow.js) */
+.skip-hint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 9vh;
+    margin: 0;
+    text-align: center;
+    font-family: "input-mono", "Input Mono", "JetBrains Mono", "Courier New", monospace;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: .25em;
+    opacity: .55;
+    animation: landing-pulse 2.6s ease-in-out infinite;
+}
+
+.intro-type-text.is-out {
+    opacity: 0;
+}
+
+#screen-intro.is-out {
+    opacity: 0;
+}
+
+
+/* ============================================================
+   SHARED CORNER-TICK FRAME
+============================================================ */
+
+.corner-ticks {
+    position: relative;
+}
+
+.corner-ticks::before,
+.corner-ticks::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: rgba(255, 255, 255, .55);
+}
+
+.corner-ticks::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1px solid;
+    border-left: 1px solid;
+}
+
+.corner-ticks::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+}
+
+
+/* ============================================================
+   SCREEN 2 — DATABASE ENTRY CARD
+============================================================ */
+
+.data-card {
+    width: min(480px, 92%);
+    background-color: #060606;
+    background-image: radial-gradient(rgba(255, 255, 255, .045) 1px, transparent 1px);
+    background-size: 7px 7px;
+    border: 1px solid rgba(255, 255, 255, .22);
+    padding: 34px 30px 26px;
+}
+
+.data-card-header {
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, .18);
+}
+
+.data-card-title {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: .01em;
+}
+
+.data-card-sub {
+    margin: 0;
+    font-size: 9px;
+    letter-spacing: .18em;
+    opacity: .5;
+}
+
+.data-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.data-row.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+}
+
+.field-group label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    opacity: .7;
+}
+
+.field-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 255, 255, .25);
+    background: rgba(255, 255, 255, .03);
+    color: #fffbfb;
+    font: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s ease, background .2s ease;
+}
+
+.field-group input:focus {
+    border-color: rgba(255, 255, 255, .7);
+    background: rgba(255, 255, 255, .08);
+}
+
+.field-group input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: .7;
+}
+
+.location-results {
+    display: none;
+    position: absolute;
+    z-index: 20;
+    top: 72px;
+    left: 0;
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, .3);
+    background: #0a0a0a;
+}
+
+.location-results.show {
+    display: block;
+}
+
+.location-option {
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+    background: transparent;
+    color: #fffbfb;
+    text-align: left;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.location-option:hover {
+    background: #fffbfb;
+    color: #060606;
+}
+
+.selected-location {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.5;
+    opacity: .55;
+}
+
+.completion-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.completion-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    opacity: .6;
+}
+
+.completion-bar {
+    display: flex;
+    gap: 2px;
+    height: 14px;
+}
+
+.completion-seg {
+    flex: 1;
+    height: 100%;
+    background: rgba(255, 255, 255, .12);
+    transition: background .2s ease;
+}
+
+.completion-seg.is-filled {
+    background: #fffbfb;
+}
+
+.data-card-footer {
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, .18);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.data-card-message {
+    margin: 0;
+    font-size: 10px;
+    letter-spacing: .06em;
+    line-height: 1.4;
+    opacity: .6;
+}
+
+.pill-btn {
+    margin-top: 0;
+    padding: 13px 26px;
+    border: 1px solid #fffbfb;
+    border-radius: 999px;
+    background: #fffbfb;
+    color: #060606;
+    flex-shrink: 0;
+}
+
+.flow-status {
+    width: min(480px, 92%);
+    text-align: center;
+    opacity: .6;
+    font-size: 11px;
+}
+
+
+/* ------------------------------------------------------------
+   Card materialize — the data card pops in from a sliver at its
+   centre: it grows tall first, then widens out to the full card,
+   corner ticks and text catching up a beat behind, for a HUD
+   "booting up" feel. JS (enterForm() in js/flow.js) adds
+   #screen-form.is-materializing right as the form screen is
+   shown, then drops it once the sequence has played, so it
+   replays every time the card comes back on screen.
+------------------------------------------------------------ */
+
+#dataCard {
+    transform-origin: center center;
+}
+
+@keyframes card-emerge {
+    0% {
+        transform: scaleX(.04) scaleY(.03);
+        opacity: 0;
+    }
+    6% {
+        opacity: 1;
+    }
+    42% {
+        transform: scaleX(.04) scaleY(1);
+    }
+    78% {
+        transform: scaleX(1) scaleY(1);
+    }
+    100% {
+        transform: scaleX(1) scaleY(1);
+        opacity: 1;
+    }
+}
+
+@keyframes card-ticks-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes card-text-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#screen-form.is-materializing #dataCard {
+    animation: card-emerge .85s cubic-bezier(.16, .84, .3, 1) both;
+}
+
+#screen-form.is-materializing #dataCard.corner-ticks::before,
+#screen-form.is-materializing #dataCard.corner-ticks::after {
+    animation: card-ticks-in .3s ease .66s both;
+}
+
+#screen-form.is-materializing #dataCard .data-card-header {
+    animation: card-text-in .45s ease .6s both;
+}
+
+#screen-form.is-materializing #dataCard .data-card-body {
+    animation: card-text-in .45s ease .7s both;
+}
+
+#screen-form.is-materializing #dataCard .data-card-footer {
+    animation: card-text-in .45s ease .8s both;
+}
+
+
+/* ============================================================
+   SCREEN 3 — LOADING
+============================================================ */
+
+.loading-panel {
+    width: min(480px, 92%);
+    background-color: #060606;
+    border: 1px solid rgba(255, 255, 255, .22);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.loading-heading {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .15em;
+}
+
+.loading-log {
+    height: 120px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 11px;
+    letter-spacing: .02em;
+    opacity: .75;
+}
+
+.loading-log p {
+    margin: 0;
+}
+
+.loading-barwrap {
+    position: relative;
+    height: 16px;
+    border: 1px solid rgba(255, 255, 255, .35);
+    overflow: hidden;
+}
+
+.loading-bar {
+    height: 100%;
+    width: 0%;
+    background: repeating-linear-gradient(
+        45deg,
+        #fffbfb 0px,
+        #fffbfb 4px,
+        rgba(255, 255, 255, .35) 4px,
+        rgba(255, 255, 255, .35) 8px
+    );
+    transition: width .15s linear;
+}
+
+.loading-footer {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    letter-spacing: .12em;
+    opacity: .55;
+}
+
+
+/* ============================================================
+   SCREEN 3b — GATHER THE STARS
+   Hold a key / the mouse (or mash them) to pull the drifting
+   particles into a star. The particles are drawn on #starCanvas
+   by js/stargather.js; this is just the canvas layer + the hint,
+   progress bar and readout along the bottom.
+============================================================ */
+
+/* Above .flow-main (z-index 2) so the burst can keep playing over
+   the universe screen while it fades in underneath. Click-through. */
+.star-canvas {
+    z-index: 3;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .8s ease;
+}
+
+.star-canvas.is-on {
+    opacity: 1;
+}
+
+#screen-stars {
+    justify-content: flex-end;
+    padding-bottom: 9vh;
+    cursor: crosshair;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+.star-hud {
+    width: min(420px, 82vw);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+    transition: opacity .45s ease;
+}
+
+/* the hud steps aside once it ignites */
+#screen-stars.is-igniting .star-hud {
+    opacity: 0;
+}
+
+.star-hint {
+    margin: 0;
+    min-height: 1.2em;
+    font-family: "input-mono", "Input Mono", "JetBrains Mono", "Courier New", monospace;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: .25em;
+    animation: landing-pulse 2.6s ease-in-out infinite;
+}
+
+.star-bar {
+    height: 8px;
+}
+
+.star-readout {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    letter-spacing: .12em;
+    opacity: .6;
+}
+
+
+/* ============================================================
+   SCREEN 4 — THE UNIVERSE (SUN / MOON / ASC PICKER)
+   Real three.js models (js/main.js, js/moon.js, js/ascendant.js —
+   the same scripts display.html uses) rendered small and spread
+   out horizontally, each one a clickable body with a name label.
+============================================================ */
+
+.universe-stage {
+    position: relative;
+    width: min(1180px, 96vw);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(20px, 7vw, 96px);
+}
+
+.universe-line {
+    display: none;
+}
+
+.universe-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #fffbfb;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.universe-model-frame {
+    display: block;
+    width: clamp(190px, 20vw, 270px);
+    aspect-ratio: 1;
+    transition: transform .3s ease, filter .3s ease;
+}
+
+.universe-body-primary .universe-model-frame {
+    width: clamp(260px, 29vw, 380px);
+}
+
+.universe-body-ascendant .universe-model-frame {
+    width: clamp(270px, 30vw, 390px);
+}
+
+.universe-body-sun .universe-model-frame {
+    pointer-events: none;
+}
+
+.universe-body-sun .universe-model::before {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    width: 20.5%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    pointer-events: auto;
+}
+
+.universe-body[data-planet="moon"] .universe-model {
+    transform: scale(1.8);
+}
+
+.universe-body-sun .universe-model {
+    position: relative;
+    transform: scale(2.7);
+    transition: transform .3s ease, filter .3s ease;
+}
+
+.universe-body-ascendant .universe-model {
+    transform: scale(2.8);
+}
+
+.universe-body-ascendant {
+    pointer-events: none;
+}
+
+.universe-body-ascendant .universe-model-frame {
+    pointer-events: none;
+}
+
+.universe-body-ascendant::before {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    width: 72%;
+    height: 40%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    pointer-events: auto;
+}
+
+.universe-body-ascendant .universe-body-label {
+    transform: translateY(-12px);
+}
+
+/* Line all three labels up. The frames are different sizes, so the moon's
+   label is pushed down by the difference to the sun's frame (same clamp()
+   widths as the frames above). The ascendant's frame is ~10px bigger than
+   the sun's, which is why its label already sits ~6px higher; the sun and
+   moon labels are lifted 6px to match it. */
+.universe-body[data-planet="moon"] .universe-body-label {
+    transform: translateY(calc((clamp(260px, 29vw, 380px) - clamp(190px, 20vw, 270px)) / 2 - 6px));
+}
+
+.universe-body-sun .universe-body-label {
+    transform: translateY(-6px);
+}
+
+.universe-body-sun {
+    /* Nudge the sun sideways with `left`, not `transform`. The global
+       button:hover rule sets transform: translateY(-3px), which was
+       replacing the old translateX here, so on hover the sun lost its
+       offset and slid left instead of just lifting like Moon and ASC. */
+    left: clamp(18px, 4vw, 58px);
+    pointer-events: none;
+}
+
+.universe-model {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.universe-body:not(.universe-body-sun):hover .universe-model-frame,
+.universe-body:not(.universe-body-sun):focus-visible .universe-model-frame {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, .3));
+}
+
+.universe-body-sun:hover .universe-model,
+.universe-body-sun:focus-visible .universe-model {
+    transform: scale(2.8);
+    filter: brightness(1.15) drop-shadow(0 0 20px rgba(255, 255, 255, .3));
+}
+
+.universe-body-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    opacity: .7;
+    transition: opacity .3s ease;
+}
+
+.universe-body:hover .universe-body-label,
+.universe-body:focus-visible .universe-body-label {
+    opacity: 1;
+}
+
+.universe-prompt {
+    margin: 0;
+    transform: translateY(34px);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    opacity: .65;
+    font-family: "input-mono", "Input Mono", "JetBrains Mono", "Courier New", monospace;
+}
+
+/* ------------------------------------------------------------
+   Arrival after the star bursts (see revealUniverse() in js/flow.js).
+   Each model starts small at the middle of the screen and travels out
+   to its place while growing to full size. js/flow.js sets how far each
+   one travels (--emerge-x / --emerge-y) and a small stagger
+   (--emerge-delay), then drops the class again once it has played.
+   `backwards` fill only, so nothing is left overriding the hover
+   scale afterwards.
+------------------------------------------------------------ */
+
+@keyframes universe-emerge {
+    0% {
+        transform: translate(var(--emerge-x, 0), var(--emerge-y, 0)) scale(.1);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes universe-text-in {
+    from { opacity: 0; }
+}
+
+#screen-universe.is-emerging .universe-model-frame {
+    animation: universe-emerge 1.4s cubic-bezier(.16, .84, .3, 1) var(--emerge-delay, 0s) backwards;
+}
+
+#screen-universe.is-emerging .universe-body-label,
+#screen-universe.is-emerging .universe-prompt {
+    animation: universe-text-in .8s ease 1.0s backwards;
+}
+
+/* no clicking a body while it is still on its way */
+#screen-universe.is-emerging .universe-body {
+    pointer-events: none;
+}
+
+.choice-symbol {
+    font-size: 15px;
+}
+
+
+/* ============================================================
+   FLOW PAGE — MOBILE
+============================================================ */
+
+@media (max-width: 700px) {
+
+    .landing-cta,
+    .skip-hint,
+    .star-hint {
+        font-size: 10px;
+        letter-spacing: .18em;
+    }
+
+    .data-row.two-col {
+        grid-template-columns: 1fr;
+    }
+
+    .data-card {
+        padding: 26px 20px 22px;
+    }
+
+    .data-card-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .data-card-footer .pill-btn {
+        width: 100%;
+    }
+
+    .universe-stage {
+        flex-wrap: wrap;
+        row-gap: 28px;
+    }
+
+    .universe-model-frame {
+        width: 150px;
+    }
+
+    .universe-body-primary .universe-model-frame {
+        width: 210px;
+    }
+
+    .universe-body-ascendant .universe-model-frame {
+        width: 220px;
+    }
+
+    .universe-body[data-planet="moon"] .universe-body-label {
+        transform: translateY(25px);
+    }
+
+    .universe-body-sun .universe-body-label {
+        transform: translateY(-5px);
+    }
+
+}
+
+/* ============================================================
+   TEXT GLOW OVERRIDES
+   Dark text sitting on light backgrounds shouldn't get the
+   white glow — it just looks like blur there.
+============================================================ */
+
+.input-group input,
+.field-group input,
+.location-option,
+.pill-btn,
+.location-option:hover {
+    text-shadow: none;
+}
+/* ============================================================
+   NEXT BUTTON (display page)
+   Same treatment as .universe-back, pinned bottom-right.
+============================================================ */
+
+.next-button {
+    position: fixed;
+    top: 18px;
+    right: 24px;
+    z-index: 20;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fffbfb;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .12em;
+    opacity: .45;
+    cursor: pointer;
+    transition: opacity .2s ease;
+}
+
+.next-button:hover,
+.next-button:focus-visible {
+    opacity: 1;
+}
+
+/* ============================================================
+   SAVE / CREDIT BUTTONS (display page)
+   Same treatment as .universe-back, pinned bottom-left.
+============================================================ */
+
+/* ============================================================
+   SAVE / CREDIT BUTTONS (display page)
+   Same treatment as .universe-back, pinned bottom-left,
+   side by side on one line.
+============================================================ */
+
+.bottom-left-actions {
+    position: fixed;
+    left: 24px;
+    bottom: 18px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.hide-button,
+.save-button,
+.credit-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fffbfb;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .12em;
+    opacity: .45;
+    cursor: pointer;
+    transition: opacity .2s ease;
+}
+
+.hide-button:hover,
+.hide-button:focus-visible,
+.save-button:hover,
+.save-button:focus-visible,
+.credit-button:hover,
+.credit-button:focus-visible {
+    opacity: 1;
+}
+
+.hide-button[aria-pressed="true"] {
+    opacity: 1;
+}
+
+/* ============================================================
+   INTERFACE HIDE TOGGLE ([H])
+   Switches every on-screen text/HUD/line element off, leaving
+   only the star render. The Hide and Save buttons stay visible
+   so there's always a way to bring the interface back or
+   capture the stars-only view.
+============================================================ */
+
+body.interface-hidden .display-header,
+body.interface-hidden .universe-back,
+body.interface-hidden .next-button,
+body.interface-hidden .planet-switcher,
+body.interface-hidden .zoom-ruler,
+body.interface-hidden .coordinate-hud,
+body.interface-hidden .display-instruction,
+body.interface-hidden .sign-panel,
+body.interface-hidden .hud-frame,
+body.interface-hidden .planet-nav,
+body.interface-hidden .credit-button {
+    display: none;
+}
+
+/* ============================================================
+   CREDIT POPUP
+   Reuses the .data-card / .corner-ticks look from the entry
+   form (same JetBrains Mono font), shown inside a dimmed
+   full-screen overlay, with an [x] in the top-right corner.
+============================================================ */
+
+.credit-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, .78);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .25s ease;
+}
+
+.credit-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.credit-card {
+    width: min(460px, 92%);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    padding: 20px 22px 16px;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+}
+
+.credit-card .data-card-header {
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+}
+
+.credit-card .data-card-title {
+    font-size: 15px;
+}
+
+.credit-card .data-card-footer {
+    margin-top: 12px;
+    padding-top: 10px;
+}
+
+.credit-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fffbfb;
+    font-size: 20px;
+    line-height: 1;
+    opacity: .55;
+    cursor: pointer;
+    transition: opacity .2s ease;
+}
+
+.credit-close:hover,
+.credit-close:focus-visible {
+    opacity: 1;
+}
+
+.credit-list {
+    gap: 10px;
+}
+
+.credit-entry {
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+
+.credit-entry:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.credit-track {
+    margin: 0 0 2px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .02em;
+}
+
+.credit-meta {
+    margin: 0 0 3px;
+    font-size: 9px;
+    letter-spacing: .1em;
+    opacity: .6;
+}
+
+.credit-link {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: .04em;
+    color: #fffbfb;
+    opacity: .75;
+    word-break: break-all;
+    text-decoration: underline;
+}
+
+.credit-link:hover,
+.credit-link:focus-visible {
+    opacity: 1;
+}
+
+.credit-footer {
+    justify-content: center;
+}
+
+.credit-footer .data-card-message {
+    text-align: center;
+}
+
+/* ============================================================
+   TV SHUT-DOWN OVERLAY
+   [N] triggers a CRT power-off: the picture collapses to a
+   bright horizontal line, then to a dot, then to black.
+   Two lines of glitching text follow, then a REPLAY button.
+============================================================ */
+
+.tv-shutdown-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #000;
+}
+
+.tv-shutdown-overlay.is-active {
+    display: flex;
+}
+
+.tv-off-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.tv-off-flash {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    opacity: 0;
+}
+
+.tv-shutdown-overlay.is-active .tv-off-flash {
+    animation: tv-flash .16s ease-out .0s forwards;
+}
+
+@keyframes tv-flash {
+    0%   { opacity: .9; }
+    100% { opacity: 0; }
+}
+
+.tv-off-line {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    box-shadow:
+        0 0 30px 6px rgba(255, 255, 255, .9),
+        0 0 90px 30px rgba(255, 255, 255, .5);
+    opacity: 0;
+    transform: scale(1, 1);
+    transform-origin: 50% 50%;
+}
+
+.tv-shutdown-overlay.is-active .tv-off-line {
+    animation: tv-collapse .95s cubic-bezier(.74, 0, .86, 0) .1s forwards;
+}
+
+@keyframes tv-collapse {
+    0%   { transform: scale(1, 1);         opacity: 1; }
+    45%  { transform: scale(1, .006);      opacity: 1; }
+    70%  { transform: scale(.16, .006);    opacity: 1; }
+    88%  { transform: scale(.03, .006);    opacity: 1; }
+    100% { transform: scale(.002, .002);   opacity: 0; }
+}
+
+.tv-glitch-wrap {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 34px;
+    width: min(700px, 86%);
+    text-align: center;
+}
+
+.tv-glitch-text {
+    position: relative;
+    margin: 0;
+    font-family: "Datatype", Arial, sans-serif;
+    font-size: clamp(12px, 1.5vw, 18px);
+    font-weight: bold;
+    letter-spacing: .1em;
+    line-height: 1.3;
+    color: #fffbfb;
+    opacity: 0;
+    transition: opacity .4s ease;
+}
+
+.tv-glitch-text.is-visible {
+    opacity: 1;
+}
+
+.tv-glitch-text.is-fading {
+    opacity: 0;
+}
+
+.tv-replay-btn {
+    display: none;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 26px;
+    border: 1px solid rgba(255, 251, 251, .5);
+    background: transparent;
+    color: #fffbfb;
+    font-family: "Coolvetica", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: .16em;
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity .5s ease, border-color .2s ease, background .2s ease;
+}
+
+.tv-replay-btn.is-visible {
+    display: inline-flex;
+    opacity: 1;
+}
+
+.tv-replay-btn:hover,
+.tv-replay-btn:focus-visible {
+    border-color: #fffbfb;
+    background: rgba(255, 255, 255, .08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tv-shutdown-overlay.is-active .tv-off-flash,
+    .tv-shutdown-overlay.is-active .tv-off-line {
+        animation: none;
+    }
+
+    .tv-shutdown-overlay.is-active .tv-off-line {
+        opacity: 1;
+        transform: scale(.002, .002);
+    }
+
+    .tv-glitch-text {
+        transition: none;
+    }
 }

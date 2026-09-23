@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Written in the stars</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/vyn4dzv.css">
+</head>
+
+<body class="flow-page">
+
+    <canvas id="bgCanvas" class="bg-canvas"></canvas>
+    <canvas id="universeStrayCanvas" class="bg-canvas universe-stray-canvas" aria-hidden="true"></canvas>
+    <main class="flow-main">
+
+        <!-- =========================================
+             SCREEN 1 — INTRO TYPING SEQUENCE
+        ========================================== -->
+
+        <section id="screen-intro" class="flow-screen is-active">
+
+            <div class="intro-type">
+                <p id="introLine" class="intro-type-text">
+                    <span id="introTyped"></span><span class="type-cursor"></span>
+                </p>
+            </div>
+
+            <p class="skip-hint" id="introSkipHint">PRESS [E] TO SKIP</p>
+
+        </section>
+
+
+        <!-- =========================================
+             SCREEN 2 — DATABASE ENTRY CARD
+        ========================================== -->
+
+        <section id="screen-form" class="flow-screen">
+
+            <div id="dataCard" class="data-card corner-ticks">
+
+                <div class="data-card-header">
+                    <p class="data-card-title">PUT YOUR TRUST<br>IN THE UNIVERSE</p>
+                    <p class="data-card-sub">ASTROLOGICAL DATABASE // NATAL ENTRY</p>
+                </div>
+
+                <div class="data-card-body">
+
+                    <div class="data-row two-col">
+
+                        <div class="field-group">
+                            <label for="birthDate">BIRTH DATE</label>
+                            <input type="date" id="birthDate">
+                        </div>
+
+                        <div class="field-group">
+                            <label for="birthTime">BIRTH TIME</label>
+                            <input type="time" id="birthTime">
+                        </div>
+
+                    </div>
+
+                    <div class="field-group location-group">
+
+                        <label for="birthPlace">BIRTH PLACE</label>
+
+                        <input
+                            type="text"
+                            id="birthPlace"
+                            placeholder="Search city or place..."
+                            autocomplete="off"
+                        >
+
+                        <div id="locationResults" class="location-results"></div>
+
+                        <p id="selectedLocation" class="selected-location">
+                            No location selected
+                        </p>
+
+                    </div>
+
+                    <div class="completion-row">
+                        <span class="completion-label">
+                            PROFILE&nbsp; <span id="completionCount">0/3</span>
+                        </span>
+                        <div id="completionBar" class="completion-bar" aria-hidden="true"></div>
+                    </div>
+
+                </div>
+
+                <div class="data-card-footer">
+                    <p id="cardMessage" class="data-card-message">FILL IN ALL FIELDS TO PROCEED</p>
+                    <button id="generateBtn" class="pill-btn" disabled>CONFIRM</button>
+                </div>
+
+            </div>
+
+            <p id="status" class="status flow-status"></p>
+
+        </section>
+
+
+        <!-- =========================================
+             SCREEN 3 — LOADING
+        ========================================== -->
+
+        <section id="screen-loading" class="flow-screen">
+
+            <div class="loading-panel corner-ticks">
+
+                <p class="loading-heading">READING THE SKY AT YOUR BIRTH</p>
+
+                <div id="loadingLog" class="loading-log"></div>
+
+                <div class="loading-barwrap">
+                    <div id="loadingBar" class="loading-bar"></div>
+                </div>
+
+                <p class="loading-footer">
+                    <span id="loadingPercent">0%</span>
+                    <span>SCAN IN PROGRESS</span>
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             SCREEN 3b — GATHER THE STARS
+             Hold a key / the mouse, or mash them, to pull the drifting
+             particles into a star. At critical mass it bursts in a soft haze
+             of light and js/flow.js fades in the universe screen, with the
+             Moon / Sun / Ascendant growing out of the centre into place.
+             The particles themselves are drawn on #starCanvas (below,
+             outside <main>) by js/stargather.js; this section only holds
+             the text + progress bar.
+        ========================================== -->
+
+        <section id="screen-stars" class="flow-screen">
+
+            <div class="star-hud">
+
+                <p id="starHint" class="star-hint">HOLD ANY KEY OR CLICK TO GATHER THE STARS</p>
+
+                <div id="starBar" class="completion-bar star-bar" aria-hidden="true"></div>
+
+                <p class="star-readout" role="status">
+                    <span id="starPercent">0%</span>
+                    <span id="starStatus">DUST ADRIFT</span>
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             SCREEN 4 — THE UNIVERSE (SUN / MOON / ASC PICKER)
+             Real three.js models (same scripts as display.html:
+             js/main.js, js/moon.js, js/ascendant.js) rendered small
+             and laid out horizontally. Each body is a real <button>
+             so it stays clickable/keyboard-focusable; flow.js reads
+             data-planet off it exactly like it did before.
+        ========================================== -->
+
+        <section id="screen-universe" class="flow-screen">
+
+            <div class="universe-stage">
+
+                <span class="universe-line" aria-hidden="true"></span>
+
+                <button class="universe-body" type="button" data-planet="moon">
+                    <span class="universe-model-frame">
+                        <span id="moon-container" class="universe-model"></span>
+                    </span>
+                    <span class="universe-body-label"><span class="choice-symbol">☽</span> MOON</span>
+                </button>
+
+                <button class="universe-body universe-body-primary universe-body-sun" type="button" data-planet="sun">
+                    <span class="universe-model-frame">
+                        <span id="three-container" class="universe-model"></span>
+                    </span>
+                    <span class="universe-body-label"><span class="choice-symbol">☉</span> SUN</span>
+                </button>
+
+                <button class="universe-body universe-body-ascendant" type="button" data-planet="ascendant">
+                    <span class="universe-model-frame">
+                        <span id="ascendant-container" class="universe-model"></span>
+                    </span>
+                    <span class="universe-body-label"><span class="choice-symbol">↑</span> ASC</span>
+                </button>
+
+            </div>
+
+            <p class="universe-prompt">CHOOSE WHERE TO BEGIN</p>
+
+        </section>
+
+    </main>
+
+    <!-- Star particles. Sits above the flow screens (z-index in css/style.css)
+         so the burst keeps playing over the universe screen as it fades in. -->
+    <canvas id="starCanvas" class="bg-canvas star-canvas" aria-hidden="true"></canvas>
+
+
+    <p class="chrome-footer">SWISS EPHEMERIS // OPEN-METEO GEOCODING</p>
+
+
+    <script src="js/starfield.js"></script>
+    <script src="js/button-sound.js"></script>
+    <script src="js/p5.js"></script>
+    <script src="js/addons/p5.sound.min.js"></script>
+    <script src="sketch.js"></script>
+    <script src="js/sound.js"></script>
+    <script src="js/stargather.js"></script>
+    <script src="js/flow.js"></script>
+
+    <!-- Same three.js model scripts display.html uses for the Sun,
+         Moon and Ascendant visuals — reused here unmodified so the
+         universe screen shows the real models, not a re-creation. -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.185.1/build/three.module.js"
+      }
+    }
+    </script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/moon.js"></script>
+    <script type="module" src="js/ascendant.js"></script>
+
+</body>
+</html>

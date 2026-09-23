@@ -4,282 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Interactive A3 — Natal Chart</title>
+    <title>Written in the stars</title>
 
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Scoped to this splash page only — kept out of css/style.css
+           so it can't affect any other page. */
+        body.headphones-page {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: "JetBrains Mono", "Courier New", monospace;
+            cursor: crosshair;
+        }
+
+        .headphones-link {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #fffbfb;
+            text-align: center;
+            padding: 0 24px;
+        }
+
+        .headphones-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .headphones-icon {
+            width: 46px;
+            height: 46px;
+            opacity: .85;
+        }
+
+        .headphones-message {
+            margin: 0;
+            padding: 18px 0;
+            width: max-content;
+            max-width: 100%;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: .18em;
+            line-height: 1.7;
+            white-space: pre-line;
+            text-transform: uppercase;
+        }
+
+        .headphones-ok {
+            margin: 0;
+            padding: 10px 26px;
+            border: 1px solid rgba(255, 255, 255, .55);
+            background: transparent;
+            color: #fffbfb;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .25em;
+            cursor: pointer;
+            transition: opacity .2s ease, background-color .2s ease;
+            opacity: .8;
+        }
+
+        .headphones-ok:hover,
+        .headphones-ok:focus-visible {
+            opacity: 1;
+            background: rgba(255, 255, 255, .08);
+        }
+    </style>
 </head>
 
-<body>
-
-    <header class="intro">
-
-        <p class="eyebrow">
-            ASTROLOGY / GENERATIVE EXPERIENCE
-        </p>
-
-        <h1>
-            DISCOVER<br>
-            YOUR NATAL CHART
-        </h1>
-
-        <p class="description">
-            Enter the date, time and place you were born
-            to discover your personalised cosmic profile.
-        </p>
-
-    </header>
-
-
-    <main>
-
-        <!-- =========================
-             BIRTH FORM
-        ========================== -->
-
-        <section class="birth-form">
-
-            <div class="input-group">
-
-                <label for="birthDate">
-                    BIRTH DATE
-                </label>
-
-                <input
-                    type="date"
-                    id="birthDate"
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label for="birthTime">
-                    BIRTH TIME
-                </label>
-
-                <input
-                    type="time"
-                    id="birthTime"
-                >
-
-            </div>
-
-
-            <div class="input-group location-group">
-
-                <label for="birthPlace">
-                    BIRTH PLACE
-                </label>
-
-                <input
-                    type="text"
-                    id="birthPlace"
-                    placeholder="Search city or place..."
-                    autocomplete="off"
-                >
-
-                <div
-                    id="locationResults"
-                    class="location-results"
-                ></div>
-
-                <p
-                    id="selectedLocation"
-                    class="selected-location"
-                >
-                    No location selected
-                </p>
-
-            </div>
-
-
-            <button
-                id="generateBtn"
-                disabled
-            >
-                GENERATE MY CHART
-            </button>
-
-
-            <p
-                id="status"
-                class="status"
-            ></p>
-
-        </section>
-
-
-        <!-- =========================
-             P5 CANVAS
-        ========================== -->
-
-        <section class="canvas-container">
-
-    <!-- Existing p5 natal chart -->
-    <div id="canvas-container"></div>
-
-    <!-- New Three.js planet -->
-    <div id="three-container"></div>
-
-</section>
-
-
-        <!-- =========================
-             RESULTS
-        ========================== -->
-
-        <section
-            id="result"
-            class="result hidden"
-        >
-
-            <div class="result-heading">
-
-                <p class="eyebrow">
-                    YOUR RESULT
-                </p>
-
-                <h2>
-                    COSMIC PROFILE
-                </h2>
-
-                <p
-                    id="birthSummary"
-                    class="birth-summary"
-                ></p>
-
-            </div>
-
-
-            <!-- BIG THREE -->
-
-            <div class="big-three">
-
-                <article class="planet-card">
-
-                    <span class="planet-symbol">
-                        ☉
-                    </span>
-
-                    <p class="planet-name">
-                        SUN
-                    </p>
-
-                    <h3 id="sunSign">
-                        —
-                    </h3>
-
-                    <p id="sunDegree">
-                        —
-                    </p>
-
-                </article>
-
-
-                <article class="planet-card">
-
-                    <span class="planet-symbol">
-                        ☽
-                    </span>
-
-                    <p class="planet-name">
-                        MOON
-                    </p>
-
-                    <h3 id="moonSign">
-                        —
-                    </h3>
-
-                    <p id="moonDegree">
-                        —
-                    </p>
-
-                </article>
-
-
-                <article class="planet-card">
-
-                    <span class="planet-symbol">
-                        ↑
-                    </span>
-
-                    <p class="planet-name">
-                        RISING
-                    </p>
-
-                    <h3 id="risingSign">
-                        —
-                    </h3>
-
-                    <p id="risingDegree">
-                        —
-                    </p>
-
-                </article>
-
-            </div>
-
-
-            <!-- PLANETS -->
-
-            <div class="planet-section">
-
-                <h2>
-                    PLANETARY POSITIONS
-                </h2>
-
-                <div id="planetList"></div>
-
-            </div>
-
-
-            <!-- HOUSES -->
-
-            <div class="planet-section">
-
-                <h2>
-                    HOUSES
-                </h2>
-
-                <div id="houseList"></div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <footer class="footer">
-
-        <p>
-            Planetary calculations powered by Swiss Ephemeris.
-            Location data provided by Open-Meteo Geocoding.
-        </p>
-
-    </footer>
-
-
-    <!-- YOUR LOCAL P5 -->
-    <script src="js/p5.js"></script>
-
-    <!-- P5 SOUND -->
-    <script src="js/addons/p5.sound.min.js"></script>
-
-    <!-- YOUR JAVASCRIPT -->
-    <script src="sketch.js"></script>
-
-    <!-- THREE.JS -->
-<script type="importmap">
-{
-  "imports": {
-        "three": "https://unpkg.com/three@0.185.1/build/three.module.js"
-  }
-}
-</script>
-
-<script type="module" src="js/main.js"></script>
+<body class="headphones-page">
+
+    <canvas id="bgCanvas" class="bg-canvas"></canvas>
+
+    <div class="headphones-link">
+
+        <div class="headphones-content">
+
+            <p class="headphones-message">
+                <span id="headphonesMessageText"></span><span class="type-cursor"></span>
+            </p>
+
+            <button type="button" class="headphones-ok" id="headphonesOk">OK</button>
+
+        </div>
+
+    </div>
+
+    <script src="js/starfield.js"></script>
+    <script src="js/button-sound.js"></script>
+    <script>
+        initStarfield("bgCanvas");
+
+        const headphonesMessage = document.getElementById("headphonesMessageText");
+        const messageLines = ["USE HEADPHONES", "FOR THE BEST EXPERIENCE"];
+        const messageText = messageLines.join("\n");
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            headphonesMessage.textContent = messageText;
+        } else {
+            let characterIndex = 0;
+            let stopTypingSound = null;
+
+            const typeNextCharacter = () => {
+                if (characterIndex === 0 || messageText[characterIndex - 1] === "\n") {
+                    stopTypingSound = window.startTypingSound
+                        ? window.startTypingSound()
+                        : null;
+                }
+
+                headphonesMessage.textContent = messageText.slice(0, characterIndex);
+                characterIndex += 1;
+
+                if (characterIndex <= messageText.length) {
+                    if (messageText[characterIndex - 1] === "\n" && stopTypingSound) {
+                        stopTypingSound();
+                        stopTypingSound = null;
+                    }
+                    setTimeout(typeNextCharacter, messageText[characterIndex - 1] === "\n" ? 260 : 65);
+                } else if (stopTypingSound) {
+                    stopTypingSound();
+                    stopTypingSound = null;
+                }
+            };
+
+            typeNextCharacter();
+        }
+
+        // A click here counts as the visitor's first interaction,
+        // which is what lets landing.html's sound autoplay right
+        // away instead of needing a second click there.
+        document.getElementById("headphonesOk").addEventListener("click", function () {
+            window.location.href = "landing.html";
+        });
+    </script>
 
 </body>
 </html>

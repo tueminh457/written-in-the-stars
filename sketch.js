@@ -1,11 +1,6 @@
 // ============================================================
 // NATAL CHART
 // P5.JS + WORLDWIDE LOCATION + ASTROWAY / SWISS EPHEMERIS
-//
-// MAIN PLANETS ONLY:
-// Sun, Moon, Mercury, Venus, Mars,
-// Jupiter, Saturn, Uranus, Neptune, Pluto
-// + Ascendant / Rising
 // ============================================================
 
 
@@ -30,6 +25,16 @@ const API_URL = USE_PUBLIC_API
 let selectedLocation = null;
 
 let chartData = null;
+
+let birthInfo = null;
+
+try {
+    chartData = JSON.parse(sessionStorage.getItem("chartData")) || null;
+    birthInfo = JSON.parse(sessionStorage.getItem("birthInfo")) || null;
+    selectedLocation = JSON.parse(sessionStorage.getItem("selectedLocation")) || null;
+} catch (error) {
+    console.warn("Could not restore saved chart data.", error);
+}
 
 let chartRotation = 0;
 
@@ -178,7 +183,7 @@ const statusText =
 let searchTimeout;
 
 
-placeInput.addEventListener(
+placeInput?.addEventListener(
     "input",
     function () {
 
@@ -493,13 +498,13 @@ function checkForm() {
 }
 
 
-birthDate.addEventListener(
+birthDate?.addEventListener(
     "change",
     checkForm
 );
 
 
-birthTime.addEventListener(
+birthTime?.addEventListener(
     "change",
     checkForm
 );
@@ -509,7 +514,7 @@ birthTime.addEventListener(
 // GENERATE CHART
 // ============================================================
 
-generateBtn.addEventListener(
+generateBtn?.addEventListener(
     "click",
     generateChart
 );
@@ -531,6 +536,16 @@ async function generateChart() {
     setStatus(
         "Calculating your natal chart..."
     );
+
+
+    if (
+        typeof window.onChartGenerateStart ===
+        "function"
+    ) {
+
+        window.onChartGenerateStart();
+
+    }
 
 
     generateBtn.disabled =
@@ -707,11 +722,25 @@ async function generateChart() {
         );
 
 
-        // ----------------------------------------------------
-        // DISPLAY
-        // ----------------------------------------------------
+        birthInfo = {
+            date: birthDate.value,
+            time: birthTime.value,
+            place: `${selectedLocation.name}, ${selectedLocation.country}`
+        };
 
-        displayResults();
+        sessionStorage.setItem("chartData", JSON.stringify(chartData));
+        sessionStorage.setItem("birthInfo", JSON.stringify(birthInfo));
+        sessionStorage.setItem("selectedLocation", JSON.stringify(selectedLocation));
+
+        if (typeof window.onChartReady === "function") {
+            window.onChartReady();
+            return;
+        } else if (document.getElementById("result")) {
+            displayResults();
+        } else {
+            window.location.href = "display.html";
+            return;
+        }
 
 
         // ----------------------------------------------------
@@ -751,6 +780,18 @@ async function generateChart() {
         setStatus(
             "Could not generate your chart. Open F12 → Console to see the error."
         );
+
+
+        if (
+            typeof window.onChartGenerateError ===
+            "function"
+        ) {
+
+            window.onChartGenerateError(
+                error
+            );
+
+        }
 
     }
 
@@ -1250,9 +1291,11 @@ function displayResults() {
         );
 
 
-    result.classList.remove(
-        "hidden"
-    );
+    if (result) {
+        result.classList.remove(
+            "hidden"
+        );
+    }
 
 
     // ========================================================
@@ -1339,22 +1382,13 @@ function displayResults() {
         );
 
 
-    document
-        .getElementById(
-            "risingSign"
-        )
-        .textContent =
-        risingSign;
+    const risingSignElement = document.getElementById("risingSign");
+    const risingDegreeElement = document.getElementById("risingDegree");
 
-
-    document
-        .getElementById(
-            "risingDegree"
-        )
-        .textContent =
-        formatDegree(
-            risingDegree
-        );
+    if (risingSignElement && risingDegreeElement) {
+        risingSignElement.textContent = risingSign;
+        risingDegreeElement.textContent = formatDegree(risingDegree);
+    }
 
 
     // ========================================================
@@ -1365,8 +1399,9 @@ function displayResults() {
         .getElementById(
             "birthSummary"
         )
-        .textContent =
-        `${birthDate.value} · ${birthTime.value} · ${selectedLocation.name}, ${selectedLocation.country}`;
+        .textContent = birthInfo
+        ? `${birthInfo.date} · ${birthInfo.time} · ${birthInfo.place}`
+        : "";
 
 
     // ========================================================
@@ -1434,6 +1469,10 @@ function displayResults() {
 
 }
 
+if (document.getElementById("sunSign") && chartData) {
+    displayResults();
+}
+
 
 // ============================================================
 // FIND PLANET
@@ -1487,8 +1526,10 @@ function setStatus(
     message
 ) {
 
-    statusText.textContent =
-        message;
+    if (statusText) {
+        statusText.textContent =
+            message;
+    }
 
 }
 
@@ -1497,7 +1538,26 @@ function setStatus(
 // P5.JS
 // ============================================================
 
+const IS_LANDING =
+    document.body?.classList.contains("landing-page") ?? false;
+
+
+const HAS_CHART_CANVAS =
+    !IS_LANDING && !!document.getElementById("canvas-container");
+
+
 function setup() {
+
+    if (IS_LANDING) {
+        constellation.setup();
+        return;
+    }
+
+    if (!HAS_CHART_CANVAS) {
+        noLoop();
+        return;
+    }
+
 
     const canvas =
         createCanvas(
@@ -1533,6 +1593,16 @@ function setup() {
 // ============================================================
 
 function draw() {
+
+    if (IS_LANDING) {
+        constellation.draw();
+        return;
+    }
+
+    if (!HAS_CHART_CANVAS) {
+        return;
+    }
+
 
     clear();
 
@@ -2002,6 +2072,12 @@ function drawAscendant(
 
 function windowResized() {
 
+    if (IS_LANDING) {
+        resizeCanvas(windowWidth, windowHeight);
+        return;
+    }
+
+
     resizeCanvas(
         min(
             windowWidth,
@@ -2011,3 +2087,339 @@ function windowResized() {
     );
 
 }
+
+
+// ============================================================
+// MOUSE
+// ============================================================
+
+function mousePressed(event) {
+
+    if (IS_LANDING) {
+        constellation.pressed(event);
+    }
+
+}
+
+
+// ============================================================
+// LANDING PAGE: CONSTELLATION GENERATOR
+// Every click on the landing page (landing.html) draws a brand new,
+// randomly shaped star-chart constellation centred on the cursor:
+//   - 8-15 dots, mostly small with a few brighter ones
+//   - joined by thin solid lines into a chain / branching shape,
+//     sometimes closed into a small loop
+//   - drawn in star by star, floats slowly, then fades away
+//
+// landing.html loads this same file. setup(), draw(), windowResized()
+// and mousePressed() above hand over to this section when the page
+// has <body class="landing-page">; every other page ignores it.
+// The canvas ignores the mouse (see .constellation-canvas in the
+// CSS), so clicks are read from the window by mousePressed().
+// ============================================================
+
+const constellation = IS_LANDING ? (() => {
+
+    // Touch devices use a tap to continue (see js/landing.js), so no canvas there
+    const touchOnly = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // ---- tweak these -------------------------------------------------
+    const LIFE          = 16000;   // ms a constellation stays before it starts to fade
+    const FADE          = 5000;    // ms it takes to fade out
+    const MAX_ON_SCREEN = 5;       // oldest ones fade early beyond this
+    const MIN_STARS     = 8;       // stars per constellation (random between these)
+    const MAX_STARS     = 15;
+    const DRAW_MS       = 140;     // ms for a line to draw between two stars
+    const DOT_MIN       = 1.6;     // radius (px) of the ordinary stars
+    const DOT_MAX       = 3.4;
+    const BIG_MIN       = 3;     // radius (px) of the 2-3 bright stars
+    const BIG_MAX       = 4.5;
+    const LINE_WEIGHT   = 0.5;       // line thickness (px)
+    const LINE_ALPHA    = 0.5;     // line opacity, 0-1
+    const STAR_ALPHA    = 0.5;     // star opacity, 0-1
+    const DRIFT_SPEED   = [2, 6];  // px per second the whole shape floats (random in this range)
+    const SWAY          = [1.5, 4];// px each star bobs around on its own (0 = rigid shape)
+    const MIN_GAP       = 34;      // closest two stars can be (px, at 900px screen height)
+    const MAX_RADIUS    = 300;     // furthest a star can be from the centre (px, same scale)
+    // ------------------------------------------------------------------
+
+    const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+    const clamp01      = t => Math.max(0, Math.min(1, t));
+
+    // "personalities" so the shapes differ from click to click
+    const STYLES = [
+        { name: "chain",   branch: 0.12, turn: 0.95, step: [70, 140] },   // long meandering line
+        { name: "branchy", branch: 0.45, turn: 1.40, step: [55, 120] },   // tree with several arms
+        { name: "cluster", branch: 0.30, turn: 1.90, step: [40, 95]  }    // tighter, more loops
+    ];
+
+    let sets = [];
+
+
+    // ---------------------------------------------------------
+    // Geometry helpers
+    // ---------------------------------------------------------
+    function ccw(a, b, c) {
+        return (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x);
+    }
+
+    function segmentsCross(a, b, c, d) {
+        return ccw(a, c, d) !== ccw(b, c, d) && ccw(a, b, c) !== ccw(a, b, d);
+    }
+
+    function pointToSegment(p, a, b) {
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len2 = dx * dx + dy * dy || 1;
+        const t = clamp01(((p.x - a.x) * dx + (p.y - a.y) * dy) / len2);
+        return Math.hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy));
+    }
+
+    // ---------------------------------------------------------
+    // Build one random constellation centred on (cx, cy)
+    // ---------------------------------------------------------
+    function generate(cx, cy, now) {
+
+        const S = Math.min(width, height) / 900;        // scale with the screen
+        const style = STYLES[Math.floor(random(STYLES.length))];
+        const target = Math.floor(random(MIN_STARS, MAX_STARS + 1));
+
+        const nodes = [{ x: 0, y: 0, parent: -1, dir: random(TWO_PI), depth: 0 }];
+        const edges = [];                               // { a, b } as node indices
+
+        // grow outwards from the first star, one star at a time
+        for (let tries = 0; nodes.length < target && tries < 600; tries++) {
+
+            const pi = Math.random() < style.branch
+                ? Math.floor(random(nodes.length))      // branch off any star
+                : nodes.length - 1;                     // or carry on from the last one
+            const parent = nodes[pi];
+
+            const dir = parent.dir + random(-style.turn, style.turn);
+            const step = random(style.step[0], style.step[1]) * S;
+            const p = { x: parent.x + Math.cos(dir) * step, y: parent.y + Math.sin(dir) * step };
+
+            if (Math.hypot(p.x, p.y) > MAX_RADIUS * S) continue;
+            if (nodes.some(n => Math.hypot(n.x - p.x, n.y - p.y) < MIN_GAP * S)) continue;
+            if (edges.some(e => pointToSegment(p, nodes[e.a], nodes[e.b]) < MIN_GAP * S * 0.55)) continue;
+            if (edges.some(e => e.a !== pi && e.b !== pi &&
+                segmentsCross(parent, p, nodes[e.a], nodes[e.b]))) continue;
+
+            nodes.push({ x: p.x, y: p.y, parent: pi, dir, depth: parent.depth + 1 });
+            edges.push({ a: pi, b: nodes.length - 1 });
+
+        }
+
+        // close up to two small loops between stars that are near each other
+        const loops = Math.floor(random(0, 3));
+        const pairs = [];
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+                const linked = edges.some(e => (e.a === i && e.b === j) || (e.a === j && e.b === i));
+                if (!linked && d < 150 * S) pairs.push({ i, j, d });
+            }
+        }
+        pairs.sort((p, q) => p.d - q.d);
+
+        let added = 0;
+        for (let k = 0; k < pairs.length && added < loops; k++) {
+
+            const { i, j } = pairs[Math.floor(random(Math.min(pairs.length, 6)))];
+            const linked = edges.some(e => (e.a === i && e.b === j) || (e.a === j && e.b === i));
+            if (linked) continue;
+
+            const clear = !edges.some(e => e.a !== i && e.a !== j && e.b !== i && e.b !== j &&
+                segmentsCross(nodes[i], nodes[j], nodes[e.a], nodes[e.b]));
+            const clearOfDots = !nodes.some((n, idx) => idx !== i && idx !== j &&
+                pointToSegment(n, nodes[i], nodes[j]) < MIN_GAP * S * 0.5);
+
+            if (clear && clearOfDots) {
+                edges.push({ a: i, b: j, loop: true });
+                added++;
+            }
+
+        }
+
+        // centre the shape on the click, then keep it fully on screen
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        nodes.forEach(n => {
+            minX = Math.min(minX, n.x); maxX = Math.max(maxX, n.x);
+            minY = Math.min(minY, n.y); maxY = Math.max(maxY, n.y);
+        });
+
+        const halfW = (maxX - minX) / 2;
+        const halfH = (maxY - minY) / 2;
+        const margin = 40;
+
+        let ox = cx;
+        let oy = cy;
+        if (halfW * 2 + margin * 2 < width)  ox = Math.max(margin + halfW, Math.min(width  - margin - halfW, ox));
+        if (halfH * 2 + margin * 2 < height) oy = Math.max(margin + halfH, Math.min(height - margin - halfH, oy));
+
+        const shiftX = ox - (minX + maxX) / 2;
+        const shiftY = oy - (minY + maxY) / 2;
+
+        // stars: mostly small dots, a few bigger bright ones
+        const stars = nodes.map(n => ({
+            x: n.x + shiftX,
+            y: n.y + shiftY,
+            r: random(DOT_MIN, DOT_MAX),
+            appear: 0,
+            amp: random(SWAY[0], SWAY[1]),
+            fx: random(0.0004, 0.0009),            // sway speed (rad per ms)
+            fy: random(0.0004, 0.0009),
+            p1: random(TWO_PI),
+            p2: random(TWO_PI)
+        }));
+
+        const bigCount = Math.min(stars.length, Math.floor(random(2, 4)));
+        const order = stars.map((_, i) => i).sort(() => Math.random() - 0.5);
+        for (let k = 0; k < bigCount; k++) stars[order[k]].r = random(BIG_MIN, BIG_MAX);
+
+        // timing: the shape draws itself outwards from the first star
+        nodes.forEach((n, i) => {
+            if (n.parent < 0) return;
+            const start = stars[n.parent].appear;
+            edges.find(e => e.b === i && !e.loop).start = start;
+            stars[i].appear = start + DRAW_MS * random(0.9, 1.4);
+        });
+        edges.forEach(e => {
+            if (e.loop) e.start = Math.max(stars[e.a].appear, stars[e.b].appear) + 120;
+        });
+
+        // the whole shape drifts slowly in a random direction until it is gone
+        const heading = random(TWO_PI);
+        const speed = random(DRIFT_SPEED[0], DRIFT_SPEED[1]) / 1000;     // px per ms
+
+        return {
+            born: now,
+            stars,
+            edges: edges.map(e => ({ a: e.a, b: e.b, start: e.start })),
+            vx: Math.cos(heading) * speed,
+            vy: Math.sin(heading) * speed,
+            fadeAt: LIFE - FADE,
+            fadeLen: FADE
+        };
+
+    }
+
+    // ---------------------------------------------------------
+    // Drawing
+    // ---------------------------------------------------------
+    function draw() {
+
+        const now = millis();
+
+        clear();
+
+        sets = sets.filter(c => now - c.born < c.fadeAt + c.fadeLen);
+
+        if (!sets.length) {
+            noLoop();
+            return;
+        }
+
+        sets.forEach(c => drawSet(c, now));
+
+    }
+
+    function drawSet(c, now) {
+
+        const ctx = drawingContext;
+        const age = now - c.born;
+        const fade = 1 - clamp01((age - c.fadeAt) / c.fadeLen);
+
+        // where every star is right now: its spot + the shared drift + its own sway
+        const pos = c.stars.map(s => reduceMotion
+            ? { x: s.x, y: s.y }
+            : {
+                x: s.x + c.vx * age + Math.sin(age * s.fx + s.p1) * s.amp,
+                y: s.y + c.vy * age + Math.sin(age * s.fy + s.p2) * s.amp
+            });
+
+        // solid lines, drawing themselves from one star to the next
+        noFill();
+        strokeWeight(LINE_WEIGHT);
+        stroke(255, 255 * LINE_ALPHA * fade);
+
+        c.edges.forEach(e => {
+
+            const grow = reduceMotion ? 1 : clamp01((age - e.start) / DRAW_MS);
+            if (grow <= 0) return;
+
+            const a = pos[e.a];
+            const b = pos[e.b];
+
+            line(a.x, a.y, lerp(a.x, b.x, grow), lerp(a.y, b.y, grow));
+
+        });
+
+        // stars
+        noStroke();
+
+        c.stars.forEach((s, i) => {
+
+            const t = reduceMotion ? 1 : clamp01((age - s.appear) / 280);
+            if (t <= 0) return;
+
+            const k = easeOutCubic(t);
+
+            ctx.shadowColor = "rgba(255,255,255,0.75)";
+            ctx.shadowBlur = 3 + s.r * 1.8;
+
+            fill(255, 255 * STAR_ALPHA * k * fade);
+            circle(pos[i].x, pos[i].y, s.r * 2 * (0.5 + 0.5 * k));
+
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = "transparent";
+
+        });
+
+    }
+
+    // ---------------------------------------------------------
+    // p5 hooks (called from setup / windowResized / mousePressed above)
+    // ---------------------------------------------------------
+    function setup() {
+
+        if (touchOnly) {
+            noCanvas();
+            noLoop();
+            return;
+        }
+
+        const cnv = createCanvas(windowWidth, windowHeight);
+        cnv.elt.classList.add("constellation-canvas");
+        cnv.elt.setAttribute("aria-hidden", "true");
+        pixelDensity(Math.min(window.devicePixelRatio || 1, 2));
+        noLoop();                                      // only runs while something is on screen
+
+    }
+
+    function pressed(e) {
+
+        if (touchOnly) return;
+        if (e && e.button !== undefined && e.button !== 0) return;
+
+        const now = millis();
+
+        sets.push(generate(mouseX, mouseY, now));
+
+        // too many on screen: the oldest ones fade out early
+        const alive = sets.filter(c => now - c.born < c.fadeAt);
+        if (alive.length > MAX_ON_SCREEN) {
+            alive.slice(0, alive.length - MAX_ON_SCREEN).forEach(c => {
+                c.fadeAt = now - c.born;
+                c.fadeLen = 1500;
+            });
+        }
+
+        loop();
+
+    }
+
+    return { setup, draw, pressed };
+
+})() : null;

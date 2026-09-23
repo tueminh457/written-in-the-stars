@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Written in the stars</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Datatype:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+</head>
+<body class="display-page">
+    <header class="display-header">
+        <p id="birthSummary" class="birth-summary"></p>
+    </header>
+
+    <button class="universe-back" type="button" aria-label="Back to the universe" onclick="window.location.href = 'form.html#universe'">
+        <span>[U]</span>
+        <span>UNIVERSE</span>
+    </button>
+
+    <button class="next-button" id="nextButton" type="button" aria-label="Next">
+        <span>[N]</span>
+        <span>NEXT</span>
+    </button>
+
+    <div class="bottom-left-actions">
+        <button class="hide-button" id="hideButton" type="button" aria-label="Hide on-screen text and lines" aria-pressed="false">
+            <span>[H]</span>
+            <span id="hideButtonLabel">HIDE</span>
+        </button>
+
+        <button class="save-button" id="saveButton" type="button" aria-label="Save current view as an image">
+            <span>[S]</span>
+            <span>SAVE</span>
+        </button>
+
+        <button class="credit-button" id="creditButton" type="button" aria-label="Song credit">
+            <span>[C]</span>
+            <span>CREDIT</span>
+        </button>
+    </div>
+
+    <button class="planet-nav planet-nav-prev" id="planetPrevButton" type="button" aria-label="Previous planet">
+        <span aria-hidden="true">&lt;</span>
+    </button>
+
+    <button class="planet-nav planet-nav-next" id="planetNextButton" type="button" aria-label="Next planet">
+        <span aria-hidden="true">&gt;</span>
+    </button>
+
+    <nav class="planet-switcher" aria-label="Planet display switcher">
+        <button class="planet-tab is-active" type="button" data-planet="sun" aria-keyshortcuts="1">
+            <span>[1]</span>
+            <span>SUN</span>
+        </button>
+        <button class="planet-tab" type="button" data-planet="moon" aria-keyshortcuts="2">
+            <span>[2]</span>
+            <span>MOON</span>
+        </button>
+        <button class="planet-tab" type="button" data-planet="ascendant" aria-keyshortcuts="3">
+            <span>[3]</span>
+            <span>ASC</span>
+        </button>
+    </nav>
+
+    <aside class="zoom-ruler" aria-label="Scroll to zoom the active planet">
+        <div class="ruler-track">
+            <input id="zoomRuler" type="range" min="0.55" max="2.2" step="0.01" value="1" aria-label="Planet zoom">
+        </div>
+    </aside>
+
+    <output id="coordinateHud" class="coordinate-hud" aria-live="polite">
+        <span class="coordinate-title">
+            <span class="coordinate-warning" aria-hidden="true">!</span>
+            <span>LIVE POSITION</span>
+        </span>
+        <span>X <b id="coordX">0.00</b></span>
+        <span>Y <b id="coordY">0.00</b></span>
+        <span>Z <b id="coordZ">0.00</b></span>
+        <span class="coordinate-stripes" aria-hidden="true"></span>
+    </output>
+
+    <p class="display-instruction">[MOUSE]  ↑↓ LIGHT  ·  ← → STRUCTURE</p>
+
+    <main>
+        <section class="visual-stage">
+            <aside id="signPanel" class="sign-panel" data-planet-panel="sun" aria-live="polite">
+                <div class="sign-panel-left">
+                    <div class="sign-panel-box">
+                        <img class="sign-panel-box-frame" src="assets/images/box.svg?v=2" alt="" aria-hidden="true">
+                        <div class="sign-panel-box-content">
+                            <div class="sign-panel-badge">
+                                <span id="signPanelEyebrow" class="sign-panel-eyebrow">YOUR SUN</span>
+                                <span class="sign-panel-badge-dash" aria-hidden="true"></span>
+                            </div>
+                            <h2 id="signPanelName" class="sign-panel-name">&nbsp;</h2>
+                            <p id="signPanelIntro" class="sign-panel-intro">The Sun represents your core identity, sense of self, and the qualities you naturally express. It reflects who you are at your center, what drives you, and how you develop your sense of individuality.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="sign-panel-right">
+                    <div class="tracking-point" aria-hidden="true">
+                        <svg viewBox="0 0 200 200" preserveAspectRatio="none">
+                            <path class="track-line" d="M54,160 L90,160 L130,60 L130,0 L200,0"></path>
+                            <line class="track-ray" x1="60" y1="160" x2="74" y2="160"></line>
+                            <line class="track-ray" x1="54" y1="174" x2="64" y2="184"></line>
+                            <line class="track-ray" x1="40" y1="180" x2="40" y2="194"></line>
+                            <line class="track-ray" x1="26" y1="174" x2="16" y2="184"></line>
+                            <line class="track-ray" x1="20" y1="160" x2="6" y2="160"></line>
+                            <line class="track-ray" x1="26" y1="146" x2="16" y2="136"></line>
+                            <line class="track-ray" x1="40" y1="140" x2="40" y2="126"></line>
+                            <line class="track-ray" x1="54" y1="146" x2="64" y2="136"></line>
+                            <circle class="track-ring" cx="40" cy="160" r="14"></circle>
+                            <circle class="track-dot" cx="40" cy="160" r="4"></circle>
+                        </svg>
+                    </div>
+                    <span class="scan-top-rule" aria-hidden="true"></span>
+                    <p class="scan-title">DATA SCAN</p>
+                    <div class="scan-stripes" aria-hidden="true"></div>
+                    <p id="signPanelText" class="sign-panel-text"><span class="typed"></span><span class="type-cursor"></span></p>
+                </div>
+            </aside>
+            <div class="hud-frame" aria-hidden="true">
+                <span class="hud-bracket hud-bracket-left"></span>
+                <span class="hud-crosshair">+</span>
+                <span class="hud-bracket hud-bracket-right"></span>
+            </div>
+            <div id="canvas-container"></div>
+            <div id="three-container"></div>
+            <div id="ascendant-container" class="is-hidden"></div>
+            <div id="moon-container" class="is-hidden"></div>
+        </section>
+    </main>
+
+    <div id="tvShutdownOverlay" class="tv-shutdown-overlay" aria-hidden="true">
+        <div class="tv-off-stage" aria-hidden="true">
+            <div class="tv-off-flash"></div>
+            <div class="tv-off-line"></div>
+        </div>
+        <div class="tv-glitch-wrap">
+            <p id="tvGlitchText" class="tv-glitch-text" data-text=""></p>
+            <button id="tvReplayBtn" class="tv-replay-btn" type="button" aria-label="Replay">
+                <span>[R]</span>
+                <span>REPLAY</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="creditOverlay" class="credit-overlay" aria-hidden="true">
+        <div id="creditCard" class="data-card corner-ticks credit-card">
+            <button id="creditCloseBtn" class="credit-close" type="button" aria-label="Close credits">&times;</button>
+            <div class="data-card-header">
+                <p class="data-card-title">TRACK CREDITS</p>
+                <p class="data-card-sub">MUSIC ATTRIBUTION // PIXABAY</p>
+            </div>
+            <div class="data-card-body credit-list">
+                <div class="credit-entry">
+                    <p class="credit-track">&ldquo;Space Ambient&rdquo;</p>
+                    <p class="credit-meta">playstarz_music, Pixabay</p>
+                    <a class="credit-link" href="https://pixabay.com/music/ambient-space-ambient-435262/" target="_blank" rel="noopener noreferrer">pixabay.com/music/ambient-space-ambient-435262</a>
+                </div>
+                <div class="credit-entry">
+                    <p class="credit-track">&ldquo;Sun From Moon&rdquo;</p>
+                    <p class="credit-meta">Onetent, Pixabay</p>
+                    <a class="credit-link" href="https://pixabay.com/music/ambient-sun-from-moon-548829/" target="_blank" rel="noopener noreferrer">pixabay.com/music/ambient-sun-from-moon-548829</a>
+                </div>
+                <div class="credit-entry">
+                    <p class="credit-track">&ldquo;Atmospheric Dark Ambient &ndash; Futuristic (You are alone on the moon)&rdquo;</p>
+                    <p class="credit-meta">Ame_Atmos, Pixabay</p>
+                    <a class="credit-link" href="https://pixabay.com/music/ambient-atmospheric-dark-ambient-futuristic-you-are-alone-on-the-moon-534132/" target="_blank" rel="noopener noreferrer">pixabay.com/music/ambient-atmospheric-dark-ambient-futuristic-you-are-alone-on-the-moon-534132</a>
+                </div>
+                <div class="credit-entry">
+                    <p class="credit-track">&ldquo;Space &ndash; Space Music&rdquo;</p>
+                    <p class="credit-meta">AtlasAudio, Pixabay</p>
+                    <a class="credit-link" href="https://pixabay.com/music/ambient-space-space-music-587610/" target="_blank" rel="noopener noreferrer">pixabay.com/music/ambient-space-space-music-587610</a>
+                </div>
+            </div>
+            <div class="data-card-footer credit-footer">
+                <p class="data-card-message">TRACKS COURTESY OF PIXABAY</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/p5.js"></script>
+    <script src="js/addons/p5.sound.min.js"></script>
+    <script src="js/button-sound.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="js/save-credit.js"></script>
+    <script src="sketch.js"></script>
+    <script src="js/sound.js"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.185.1/build/three.module.js"
+      }
+    }
+    </script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/moon.js"></script>
+    <script type="module" src="js/ascendant.js"></script>
+    <script>
+        const planetTabs = document.querySelectorAll(".planet-tab");
+        const sunStage = document.getElementById("three-container");
+        const moonStage = document.getElementById("moon-container");
+        const ascendantStage = document.getElementById("ascendant-container");
+        const placeholders = document.querySelectorAll(".planet-placeholder");
+        const signPanel = document.getElementById("signPanel");
+        const zoomRuler = document.getElementById("zoomRuler");
+        const zoomRulerPanel = document.querySelector(".zoom-ruler");
+        let activePlanet = "sun";
+
+        function setZoom(value) {
+            const zoom = Math.min(2.2, Math.max(0.55, value));
+            zoomRuler.value = zoom.toFixed(2);
+            document.documentElement.style.setProperty("--ruler-tick-gap", `${(5 + zoom * 7).toFixed(2)}px`);
+            window.dispatchEvent(new CustomEvent("visual-zoom", {
+                detail: { planet: activePlanet, zoom }
+            }));
+        }
+
+        zoomRuler.addEventListener("input", () => setZoom(Number(zoomRuler.value)));
+        zoomRulerPanel.addEventListener("wheel", (event) => {
+            event.preventDefault();
+            setZoom(Number(zoomRuler.value) * (event.deltaY < 0 ? 1.08 : 0.92));
+        }, { passive: false });
+
+        // Keep the ruler in sync when the zoom happens the OTHER way
+        // around: scrolling/pinching directly on the stars. That
+        // goes through OrbitControls, not setZoom(), so it needs its
+        // own listener. We only update the slider + tick spacing here
+        // (not setZoom) so we don't re-fire "visual-zoom" and fight
+        // the camera that just caused this in the first place.
+        window.addEventListener("canvas-zoom", (event) => {
+            if (event.detail.planet !== activePlanet) return;
+            const zoom = Math.min(2.2, Math.max(0.55, event.detail.zoom));
+            zoomRuler.value = zoom.toFixed(2);
+            document.documentElement.style.setProperty("--ruler-tick-gap", `${(5 + zoom * 7).toFixed(2)}px`);
+        });
+
+        window.addEventListener("visual-coordinates", (event) => {
+            if (event.detail.planet !== activePlanet) return;
+            document.getElementById("coordX").textContent = event.detail.x.toFixed(2);
+            document.getElementById("coordY").textContent = event.detail.y.toFixed(2);
+            document.getElementById("coordZ").textContent = event.detail.z.toFixed(2);
+        });
+
+        planetTabs.forEach((tab) => {
+            tab.addEventListener("click", () => {
+                const planet = tab.dataset.planet;
+                    activePlanet = planet;
+                    setZoom(1);
+                planetTabs.forEach((item) => item.classList.toggle("is-active", item === tab));
+                sunStage.classList.toggle("is-hidden", planet !== "sun");
+                moonStage.classList.toggle("is-hidden", planet !== "moon");
+                ascendantStage.classList.toggle("is-hidden", planet !== "ascendant");
+                placeholders.forEach((item) => item.classList.toggle("is-visible", item.dataset.placeholder === planet));
+                signPanel.classList.toggle("is-hidden", false);
+                loadSignPanel(planet);
+
+                // The Moon/Ascendant canvases are created at hidden size
+                // (0x0) on first load, so give them their real dimensions
+                // the first time their tab becomes visible.
+                if (planet === "ascendant" || planet === "moon") {
+                    window.dispatchEvent(new Event("resize"));
+                }
+            });
+        });
+
+        // ================================================
+        // < > PLANET NAV ARROWS (middle-left / middle-right)
+        // Cycle through the same Sun -> Moon -> Ascendant
+        // order as the [1]/[2]/[3] tabs, wrapping around.
+        // ================================================
+        const planetOrder = ["sun", "moon", "ascendant"];
+        const planetPrevButton = document.getElementById("planetPrevButton");
+        const planetNextButton = document.getElementById("planetNextButton");
+
+        function stepPlanet(step) {
+            const currentIndex = planetOrder.indexOf(activePlanet);
+            const nextIndex = (currentIndex + step + planetOrder.length) % planetOrder.length;
+            document.querySelector(`.planet-tab[data-planet="${planetOrder[nextIndex]}"]`).click();
+        }
+
+        planetPrevButton.addEventListener("click", () => stepPlanet(-1));
+        planetNextButton.addEventListener("click", () => stepPlanet(1));
+
+        window.addEventListener("keydown", (event) => {
+            const keyTargets = {
+                "1": "sun",
+                "2": "moon",
+                "3": "ascendant"
+            };
+
+            if (keyTargets[event.key]) {
+                document.querySelector(`.planet-tab[data-planet="${keyTargets[event.key]}"]`).click();
+                return;
+            }
+
+            if (event.key.toLowerCase() === "u") {
+                document.querySelector(".universe-back").click();
+            }
+
+            if (event.key.toLowerCase() === "n") {
+                document.getElementById("nextButton").click();
+            }
+
+            if (event.key.toLowerCase() === "r" && tvOverlay.classList.contains("is-active")) {
+                document.getElementById("tvReplayBtn").click();
+            }
+        });
+
+        // ================================================
+        // TV SHUT-DOWN SEQUENCE
+        // Pressing [N] plays a CRT power-off animation
+        // (picture collapses to a line, then a dot, then
+        // black), then two lines of text decode in from
+        // random characters, hold, and fade out one after
+        // another, then a REPLAY button appears.
+        // ================================================
+        const tvOverlay = document.getElementById("tvShutdownOverlay");
+        const tvGlitchText = document.getElementById("tvGlitchText");
+        const tvReplayBtn = document.getElementById("tvReplayBtn");
+        const nextButton = document.getElementById("nextButton");
+        const glitchSound = new Audio("assets/sfx/glitch.mp3");
+        glitchSound.preload = "auto";
+
+        const TV_GLITCH_LINES = [
+            "NO FURTHER DATA.",
+            "THE UNIVERSE IS IN YOUR HAND."
+        ];
+
+        let tvSequenceToken = 0;
+
+        function scrambleTvLine(token, text, onDone) {
+
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+-/<>";
+            const frameTime = 40;
+            const duration = 700 + text.length * 28;
+            const totalFrames = Math.round(duration / frameTime);
+            let frame = 0;
+
+            const randomChar = () => chars[Math.floor(Math.random() * chars.length)];
+
+            tvGlitchText.setAttribute("data-text", text);
+            tvGlitchText.classList.add("is-visible");
+
+            (function step() {
+
+                if (token !== tvSequenceToken) return;
+
+                frame++;
+                const revealCount = Math.floor((frame / totalFrames) * text.length);
+                let out = "";
+
+                for (let i = 0; i < text.length; i++) {
+                    out += (i < revealCount || text[i] === " ") ? text[i] : randomChar();
+                }
+
+                tvGlitchText.textContent = out;
+
+                if (frame >= totalFrames) {
+                    tvGlitchText.textContent = text;
+                    onDone();
+                } else {
+                    setTimeout(step, frameTime);
+                }
+
+            })();
+
+        }
+
+        function runGlitchSequence(token) {
+
+            let i = 0;
+
+            function showNextLine() {
+
+                if (token !== tvSequenceToken) return;
+
+                if (i >= TV_GLITCH_LINES.length) {
+                    tvReplayBtn.classList.add("is-visible");
+                    return;
+                }
+
+                const line = TV_GLITCH_LINES[i];
+                tvGlitchText.classList.remove("is-fading");
+                tvGlitchText.textContent = "";
+
+                scrambleTvLine(token, line, () => {
+
+                    if (token !== tvSequenceToken) return;
+
+                    setTimeout(() => {
+                        if (token !== tvSequenceToken) return;
+                        tvGlitchText.classList.add("is-fading");
+
+                        setTimeout(() => {
+                            if (token !== tvSequenceToken) return;
+                            tvGlitchText.classList.remove("is-visible", "is-fading");
+                            tvGlitchText.textContent = "";
+                            i++;
+                            setTimeout(showNextLine, 320);
+                        }, 420);
+                    }, 2200);
+
+                });
+
+            }
+
+            showNextLine();
+
+        }
+
+        function playTvGlitchSound() {
+            glitchSound.currentTime = 0;
+            glitchSound.play().catch(function (error) {
+                console.warn("display.html: glitch sound could not play.", error);
+            });
+        }
+
+        function startTvShutdown() {
+
+            tvSequenceToken++;
+            const token = tvSequenceToken;
+
+            tvGlitchText.classList.remove("is-visible", "is-fading");
+            tvReplayBtn.classList.remove("is-visible");
+
+            tvOverlay.classList.remove("is-active");
+            // Force reflow so the collapse/flash keyframes restart every time.
+            void tvOverlay.offsetWidth;
+            tvOverlay.classList.add("is-active");
+            playTvGlitchSound();
+
+            setTimeout(() => runGlitchSequence(token), 1150);
+
+        }
+
+        nextButton.addEventListener("click", startTvShutdown);
+
+        tvReplayBtn.addEventListener("click", () => {
+            window.location.href = "index.html";
+        });
+
+        // ================================================
+        // SIGN SCRIPTS — ONE PARAGRAPH PER RESULT
+        // ================================================
+        const SUN_SIGN_TEXT = {
+            Aries: "You are bold, energetic, and naturally driven to take action. You like to lead, chase new experiences, and follow your instincts rather than wait around. You have a strong independent spirit and a fiery confidence, but you can sometimes be impatient or act before thinking.",
+            Taurus: "You are calm, grounded, and drawn to stability and comfort. You like to take your time, build things steadily, and enjoy the things that make life feel good. You are loyal and dependable, but you can sometimes be stubborn or resistant to change.",
+            Gemini: "You are curious, adaptable, and always looking for something new to learn or talk about. You enjoy connecting with different people, exploring ideas, and keeping things interesting. You can be quick-thinking and versatile, but sometimes you may become restless or indecisive.",
+            Cancer: "You are sensitive, caring, and deeply connected to the people and places that feel like home. You value emotional security and tend to protect the people you care about. You have strong intuition and empathy, but you can sometimes be overly sensitive or hold onto the past.",
+            Leo: "You are confident, expressive, and naturally drawn to being seen and appreciated. You enjoy creating, performing, and bringing energy into the lives of others. You have a warm and generous personality, but you can sometimes become dramatic or crave too much attention.",
+            Virgo: "You are thoughtful, observant, and naturally focused on making things better. You notice details that others might miss and like to be useful, organised, and prepared. You are practical and dependable, but you can sometimes overthink things or be too critical of yourself and others.",
+            Libra: "You are social, charming, and naturally drawn to harmony and balance. You value relationships, beauty, and fairness, and you often consider different perspectives before making a decision. You are diplomatic and easy to connect with, but you can sometimes struggle with indecision or avoiding conflict.",
+            Scorpio: "You are intense, private, and deeply driven by your emotions and instincts. You tend to look beneath the surface and are drawn to experiences that feel meaningful and transformative. You are loyal and determined, but you can sometimes become suspicious, secretive, or emotionally guarded.",
+            Sagittarius: "You are adventurous, optimistic, and always looking for new experiences and possibilities. You enjoy freedom, travel, learning, and exploring ideas beyond what you already know. You are enthusiastic and open-minded, but you can sometimes be impulsive or overly blunt.",
+            Capricorn: "You are ambitious, disciplined, and focused on building something lasting. You like having goals to work toward and are willing to put in the effort to achieve them. You are responsible and determined, but you can sometimes put too much pressure on yourself or take things too seriously.",
+            Aquarius: "You are independent, unconventional, and naturally drawn to new ideas and different ways of thinking. You value freedom and enjoy questioning what is considered normal or expected. You are original and open-minded, but you can sometimes seem distant or overly detached from your emotions.",
+            Pisces: "You are imaginative, sensitive, and deeply connected to your emotions and surroundings. You tend to see the world through intuition and creativity, often picking up on feelings that others overlook. You are compassionate and dreamy, but you can sometimes become overwhelmed or lose yourself in your imagination."
+        };
+
+        const MOON_SIGN_TEXT = {
+            Aries: "You are emotionally direct, passionate, and quick to react. You tend to express your feelings openly and prefer to deal with emotions immediately rather than hold them in. You have a strong emotional independence, but you can sometimes be impatient or easily frustrated.",
+            Taurus: "You are emotionally calm, grounded, and drawn to comfort and stability. You feel safest when your surroundings are familiar and your life feels secure. You have a steady and patient emotional nature, but you can sometimes resist change or hold onto things for too long.",
+            Gemini: "You are emotionally curious, adaptable, and naturally drawn to communication. You tend to process your feelings by talking, thinking, and exploring different perspectives. You have a flexible emotional nature, but you can sometimes overthink your feelings or become easily distracted.",
+            Cancer: "You are emotionally sensitive, nurturing, and deeply connected to your sense of home and belonging. You tend to feel things strongly and naturally care for the people around you. You have a strong emotional intuition, but you can sometimes become overly sensitive or retreat into your own shell.",
+            Leo: "You are emotionally warm, expressive, and naturally drawn to recognition and affection. You feel happiest when you can express yourself freely and feel appreciated by the people around you. You have a generous emotional nature, but you can sometimes take things personally or need reassurance.",
+            Virgo: "You are emotionally thoughtful, practical, and naturally focused on solving problems. You tend to process your feelings by analysing them and finding ways to make things better. You have a careful and dependable emotional nature, but you can sometimes overanalyse or be too hard on yourself.",
+            Libra: "You are emotionally peaceful, social, and naturally drawn to harmony. You feel safest when your relationships are balanced and there is little conflict around you. You have a diplomatic emotional nature, but you can sometimes avoid difficult feelings or depend too much on others for emotional balance.",
+            Scorpio: "You are emotionally intense, private, and deeply perceptive. You tend to experience feelings strongly and rarely reveal everything happening beneath the surface. You have a powerful emotional depth and intuition, but you can sometimes become guarded, suspicious, or overwhelmed by your emotions.",
+            Sagittarius: "You are emotionally optimistic, adventurous, and naturally drawn to freedom. You feel safest when you have space to explore, learn, and experience something new. You have an enthusiastic emotional nature, but you can sometimes avoid difficult feelings or become restless.",
+            Capricorn: "You are emotionally controlled, responsible, and naturally focused on stability. You tend to handle your feelings privately and prefer to stay composed when things become difficult. You have a strong emotional resilience, but you can sometimes suppress your feelings or put too much pressure on yourself.",
+            Aquarius: "You are emotionally independent, unconventional, and naturally drawn to freedom. You tend to process your feelings through logic and reflection rather than immediate emotional expression. You have a unique perspective on emotions, but you can sometimes seem distant or disconnected from your feelings.",
+            Pisces: "You are emotionally sensitive, imaginative, and deeply affected by your surroundings. You tend to absorb the emotions around you and experience your feelings through intuition and creativity. You have a compassionate and dreamy emotional nature, but you can sometimes become overwhelmed or lose your emotional boundaries."
+        };
+
+        const ASCENDANT_SIGN_TEXT = {
+            Aries: "You come across as bold, energetic, and ready to take action. You tend to approach new situations directly and are not afraid to make the first move. You have a confident and spontaneous presence, but you can sometimes appear impatient or impulsive.",
+            Taurus: "You come across as calm, grounded, and comfortable in your own pace. You tend to approach new situations slowly and prefer to observe before making a move. You have a steady and reassuring presence, but you can sometimes appear stubborn or resistant to change.",
+            Gemini: "You come across as curious, social, and quick-thinking. You tend to approach new situations by asking questions, communicating, and exploring what is happening around you. You have a lively and adaptable presence, but you can sometimes appear restless or easily distracted.",
+            Cancer: "You come across as gentle, caring, and emotionally aware. You tend to approach new situations cautiously and pay close attention to the atmosphere around you. You have a warm and approachable presence, but you can sometimes appear shy or overly guarded.",
+            Leo: "You come across as confident, expressive, and naturally noticeable. You tend to enter new situations with warmth and self-assurance, often drawing attention without trying too hard. You have a charismatic and energetic presence, but you can sometimes appear overly dramatic or attention-seeking.",
+            Virgo: "You come across as thoughtful, observant, and composed. You tend to approach new situations carefully, noticing details and figuring things out before acting. You have a practical and organised presence, but you can sometimes appear reserved or overly cautious.",
+            Libra: "You come across as charming, friendly, and naturally approachable. You tend to enter new situations by reading the room and creating a sense of harmony with the people around you. You have a graceful and diplomatic presence, but you can sometimes appear indecisive or too focused on pleasing others.",
+            Scorpio: "You come across as intense, mysterious, and difficult to read. You tend to observe your surroundings carefully before revealing too much about yourself. You have a strong and magnetic presence, but you can sometimes appear intimidating or overly guarded.",
+            Sagittarius: "You come across as adventurous, optimistic, and open-minded. You tend to approach new situations with curiosity and enthusiasm, looking for opportunities to explore and experience something different. You have a lively and independent presence, but you can sometimes appear impulsive or overly direct.",
+            Capricorn: "You come across as serious, composed, and self-controlled. You tend to approach new situations carefully and prefer to understand what is expected before making a move. You have a mature and reliable presence, but you can sometimes appear distant or overly serious.",
+            Aquarius: "You come across as independent, unconventional, and difficult to predict. You tend to approach new situations in your own way and are not afraid to stand apart from the crowd. You have an original and interesting presence, but you can sometimes appear detached or unpredictable.",
+            Pisces: "You come across as gentle, dreamy, and emotionally receptive. You tend to move through new situations intuitively, responding to the atmosphere and people around you. You have a soft and mysterious presence, but you can sometimes appear distracted or difficult to read."
+        };
+
+        const SIGN_PANEL_CONFIG = {
+            sun: {
+                eyebrow: "YOUR SUN",
+                intro: "The Sun represents your core identity, sense of self, and the qualities you naturally express. It reflects who you are at your center, what drives you, and how you develop your sense of individuality.",
+                texts: SUN_SIGN_TEXT
+            },
+            moon: {
+                eyebrow: "YOUR MOON",
+                intro: "The Moon represents your emotions, inner self, instincts, and emotional needs. It reflects how you process feelings, what makes you feel safe, and the ways you naturally respond to the world around you.",
+                texts: MOON_SIGN_TEXT
+            },
+            ascendant: {
+                eyebrow: "YOUR ASCENDANT",
+                intro: "The Ascendant represents the way you present yourself to the world, your first impression, and how you naturally approach new situations. It reflects your outward behaviour, appearance, and the way others may experience you before getting to know your deeper self.",
+                texts: ASCENDANT_SIGN_TEXT
+            }
+        };
+
+        function typeSignText(text, speed) {
+
+            const typedEl = document.querySelector("#signPanelText .typed");
+
+            if (!typedEl) return;
+
+            typedEl.textContent = "";
+            const stopTypingSound = window.startTypingSound
+                ? window.startTypingSound()
+                : null;
+
+            let i = 0;
+
+            (function step() {
+                if (i <= text.length) {
+                    typedEl.textContent = text.slice(0, i);
+                    i++;
+                    setTimeout(step, speed || 22);
+                } else if (stopTypingSound) {
+                    stopTypingSound();
+                }
+            })();
+
+        }
+
+        // Scrambles through random characters before settling on the
+        // final sign name, left-to-right, for a sci-fi "decoding" feel.
+        function scrambleToText(el, finalText, duration) {
+
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+-/";
+            const frameTime = 40;
+            const totalFrames = Math.round((duration || 900) / frameTime);
+            let frame = 0;
+
+            function randomChar() {
+                return chars[Math.floor(Math.random() * chars.length)];
+            }
+
+            clearInterval(el._scrambleInterval);
+
+            el._scrambleInterval = setInterval(() => {
+                frame++;
+                const revealCount = Math.floor((frame / totalFrames) * finalText.length);
+                let out = "";
+                for (let i = 0; i < finalText.length; i++) {
+                    out += (i < revealCount || finalText[i] === " ") ? finalText[i] : randomChar();
+                }
+                el.textContent = out;
+                if (frame >= totalFrames) {
+                    el.textContent = finalText;
+                    clearInterval(el._scrambleInterval);
+                }
+            }, frameTime);
+
+        }
+
+        function loadSignPanel(planet) {
+
+            const nameEl = document.getElementById("signPanelName");
+            const eyebrowEl = document.getElementById("signPanelEyebrow");
+            const introEl = document.getElementById("signPanelIntro");
+            const config = SIGN_PANEL_CONFIG[planet];
+
+            if (!config) return;
+
+            eyebrowEl.textContent = config.eyebrow;
+            introEl.textContent = config.intro;
+
+            if (eyebrowEl) scrambleToText(eyebrowEl, eyebrowEl.textContent.trim(), 500);
+            if (introEl) scrambleToText(introEl, introEl.textContent.trim(), 1800);
+
+            // `chartData` and `findPlanet` come from sketch.js, loaded
+            // earlier on this page — chartData is restored from
+            // sessionStorage as soon as sketch.js runs.
+            const chartPoint = (typeof chartData !== "undefined" && chartData)
+                ? planet === "ascendant"
+                    ? { sign: getZodiac(chartData.ascendant) }
+                    : chartData.planets.find((item) => item.name === (planet === "moon" ? "Moon" : "Sun"))
+                : null;
+
+            if (!chartPoint || !config.texts[chartPoint.sign]) {
+                nameEl.textContent = "NO CHART YET";
+                typeSignText("Generate your natal chart on the previous page to see your sign here.");
+                return;
+            }
+
+            scrambleToText(nameEl, chartPoint.sign.toUpperCase());
+            typeSignText(config.texts[chartPoint.sign]);
+
+        }
+
+        loadSignPanel("sun");
+
+        // ================================================
+        // OPEN ON THE PLANET THE USER PICKED ON THE
+        // UNIVERSE-CHOOSER SCREEN (form.html), IF ANY.
+        // Falls back to whichever tab is marked active in
+        // the markup (Sun) when nothing was stored.
+        // ================================================
+        try {
+
+            const startPlanet = sessionStorage.getItem("startPlanet");
+
+            if (startPlanet) {
+
+                const startTab = document.querySelector(
+                    `.planet-tab[data-planet="${startPlanet}"]`
+                );
+
+                if (startTab && !startTab.classList.contains("is-active")) {
+                    startTab.click();
+                }
+
+            }
+
+        } catch (error) {
+            console.warn("Could not restore starting planet.", error);
+        }
+    </script>
+</body>
+</html>
